@@ -1,0 +1,18 @@
+# path or URL to sample sheet (TSV format, columns: sample, condition, ...)
+samples: samples.tsv
+
+# path or URL to sequencing unit sheet (TSV format, columns: sample, unit, fq1, fq2)
+# Units are technical replicates (e.g., lanes or resequencing of the same biological
+# sample).
+units: units.tsv
+
+genome: "data/genome/potato_dm_v404_all_pm_un.fasta"
+
+# sequencing adapter
+adapter: AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTGTTCCTGAGTGTAGATCTCGGTGGTCGCCGTATCATT
+
+params:
+    cutadapt-pe: "-q 10 -m 40 -j 8"
+    cutadapt-se: "-q 10 -m 40 -j 8"
+
+controlfile: "LOP868-SRR6123032_coverage.bed"
