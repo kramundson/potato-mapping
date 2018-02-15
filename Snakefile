@@ -21,26 +21,6 @@ def get_trimmed(wildcards): # keep here, move to align.smk once made
     # single end sample
     return "data/trimmed/{sample}-{unit}.fastq.gz".format(**wildcards)
 
-#######an earnest attempt at integrating fastq dump of SRA data into this pipeline#######
-# samples = pd.read_table(config["samples"], index_col="sample")
-# units = pd.read_table(config["units"], index_col="sample", dtype=str)
-# units.index = units.index.set_levels([i.astype(str) for i in units.index.levels]) # enforce str in index
-
-# def is_single_end(sample):
-#     return pd.isnull(units.loc[(sample), "fq2"]) # fq2 comes from units.tsv
-# 
-# def get_fastq(wildcards):
-#     return "data/reads/"+units.loc[(wildcards.sample), ["fq1", "fq2"]].dropna()
-# 
-# def get_trimmed(wildcards):
-#     if not is_single_end(**wildcards):
-#         # paired end sample
-#         return expand("data/trimmed/{sample}-{unit}--{group}.fastq.gz",
-#             group=[1,2], **wildcards)
-#     # single end sample
-#     return "data/trimmed/{sample}-{unit}.fastq.gz".format(**wildcards)
-######End earnest attempt, resume normal pipeline######
-
 rule all: # TODO clean this up
     input:
         config["genome"],
@@ -59,6 +39,8 @@ rule get_potato_genome:
     shell:
         "./scripts/get_potato_genome.sh"
 
+# possible fix: access index using units.index.values. This gets me an array of tuples that make up each index.
+# Would still need to filter for NCBI SRA data. A dumb catch is str.startswith("SRR"). This will get my data but is fragile. Go with it for now.
 #rule datagrab: # todo get this running else omit
 #    input:
 #        get_SRRid
