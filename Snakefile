@@ -33,26 +33,18 @@ rule all: # TODO clean this up
         "data/dedup/PL4-SRR6123031-dedup-sorted.aln.bam.bai",
         "data/calls/all-calls.vcf"
 
-rule get_potato_genome:
+rule get_genome:
     output:
-        "data/genome/potato_dm_v404_all_pm_un.fasta"
+        config["genome"]
     shell:
         "./scripts/get_potato_genome.sh"
 
-# possible fix: access index using units.index.values. This gets me an array of tuples that make up each index.
-# Would still need to filter for NCBI SRA data. A dumb catch is str.startswith("SRR"). This will get my data but is fragile. Go with it for now.
-#rule datagrab: # todo get this running else omit
-#    input:
-#        get_SRRid
-#    output:
-#        "data/reads/SRR6123031_1.fastq.gz",
-#        "data/reads/SRR6123031_2.fastq.gz",
-#        "data/reads/SRR6123032_1.fastq.gz",
-#        "data/reads/SRR6123032_2.fastq.gz",
-#        "data/reads/SRR6123183_1.fastq.gz",
-#        "data/reads/SRR6123183_2.fastq.gz"
-#    shell:
-#        "fastq-dump -B -I --gzip --split-3 -O ./data/reads {input}"
+rule get_SRA_reads:
+    output:
+        ["data/reads/{}".format(x) for x in units["fq1"].tolist() if x.startswith("SRR")],
+        ["data/reads/{}".format(x) for x in units["fq2"].tolist() if x.startswith("SRR")]
+    shell:
+        "scripts/get_SRA_reads.sh"
 
 rule cutadapt_pe:
     input:
@@ -108,9 +100,13 @@ rule align:
 
 # uses snakemake wrapper repository, https://snakemake-wrappers.readthedocs.io/en/stable/wrappers/picard/markduplicates.html
 # Runs out of java heap space if using miniconda default.
-# To correct, add desired memory to jvm_mem_opts in the file:
-# miniconda3/envs/potato/share/picard-2.14.1-0 
+# To correct, add desired memory to jvm_mem_opts in the picard shell wrapper:
+# miniconda3/envs/potato/share/picard-2.14.1-0/picard 
+# Edit the line jmp_mem_opts=""
 # I doubled the heap space from the default: -Xms512m -Xmx1g. This seemed to work fine.
+
+# Picard memory update 16 Feb 2018: 2G throws OutOfMemory error when dedup aligned PL4 reads
+# I increased heap space to 4G, i.e., -Xms512m -Xmx4g
 
 rule mark_duplicates:
     input:
