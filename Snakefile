@@ -140,7 +140,7 @@ rule freebayes:
     log:
         "logs/freebayes/all-calls.log"
     shell:
-         "freebayes-parallel <(./scripts/fasta_generate_regions.py {input.ref} 1000000) 12 -f {input.ref} data/dedup/*.aln.bam > {output}"
+         "freebayes-parallel <(./scripts/fasta_generate_regions.py {input.ref} 1000000) 12 -m 20 -q 20 -f {input.ref} data/dedup/*.aln.bam > {output}"
          
 rule bedtools_init:
     input:
