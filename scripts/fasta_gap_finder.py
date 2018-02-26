@@ -18,4 +18,12 @@ args = parser.parse_args()
 with open(args.fasta) as handle:
     for record in SeqIO.parse(handle, "fasta"):
         for match in re.finditer('N+', str(record.seq)):
-            print(record.id, match.start()-args.buffer, match.end()+args.buffer, sep='\t')
+            if match.start()-args.buffer < 0:
+                start=0
+            else:
+                start=match.start()-args.buffer
+            if match.end()+args.buffer >= len(record.seq):
+                end=len(record.seq)
+            else:
+                end=match.end()+args.buffer
+            print(record.id, start, end, sep='\t')
