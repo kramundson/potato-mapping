@@ -75,11 +75,11 @@ rule cutadapt:
     wrapper:
         "0.17.4/bio/cutadapt/se"
 
-rule bwa_index: # need to add this rule and run properly
+rule bwa_index:
     input:
-        "data/genome/potato_dm_v404_all_pm_un.fasta"
+        config["genome"]
     output:
-        "data/genome/potato_dm_v404_all_pm_un.fasta.bwt"
+        config["genome"]+".bwt"
     shell:
         "bwa index {input}"
 
