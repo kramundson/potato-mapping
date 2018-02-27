@@ -16,3 +16,12 @@ params:
     cutadapt-se: "-q 10 -m 40 -j 8"
 
 controlfile: "LOP868-SRR6123032_coverage.bed"
+
+targets:
+ - data/dedup/LOP868_004-KFRAG_00003H-dedup-sorted.aln.bam.bai
+ - data/dedup/LOP868_064-KFRAG_00028H-dedup-sorted.aln.bam.bai
+ - data/dedup/LOP868_305-KFRAG_00092H-dedup-sorted.aln.bam.bai
+ - data/dedup/LOP868-SRR6123032-dedup-sorted.aln.bam.bai
+ - data/dedup/IVP101-SRR6123183-dedup-sorted.aln.bam.bai
+ - data/dedup/PL4-SRR6123031-dedup-sorted.aln.bam.bai
+ - data/calls/all-calls.vcf

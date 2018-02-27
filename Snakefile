@@ -3,7 +3,6 @@ shell.executable("bash")
 
 configfile: "config.yaml"
 
-samples = pd.read_table(config["samples"], index_col="sample")
 units = pd.read_table(config["units"], index_col=["sample", "unit"], dtype=str)
 units.index = units.index.set_levels([i.astype(str) for i in units.index.levels]) # enforce str in index
 
@@ -24,14 +23,15 @@ def get_trimmed(wildcards): # keep here, move to align.smk once made
 rule all: # TODO clean this up
     input:
         config["genome"],
-        "data/genome/potato_dm_v404_all_pm_un.fasta.bwt",
-        "data/dedup/LOP868_004-KFRAG_00003H-dedup-sorted.aln.bam.bai",
-        "data/dedup/LOP868_064-KFRAG_00028H-dedup-sorted.aln.bam.bai",
-        "data/dedup/LOP868_305-KFRAG_00092H-dedup-sorted.aln.bam.bai",
-        "data/dedup/LOP868-SRR6123032-dedup-sorted.aln.bam.bai",
-        "data/dedup/IVP101-SRR6123183-dedup-sorted.aln.bam.bai",
-        "data/dedup/PL4-SRR6123031-dedup-sorted.aln.bam.bai",
-        "data/calls/all-calls.vcf"
+        config["genome"]+".bwt",
+        config["targets"]
+        #"data/dedup/LOP868_004-KFRAG_00003H-dedup-sorted.aln.bam.bai",
+        #"data/dedup/LOP868_064-KFRAG_00028H-dedup-sorted.aln.bam.bai",
+        #"data/dedup/LOP868_305-KFRAG_00092H-dedup-sorted.aln.bam.bai",
+        #"data/dedup/LOP868-SRR6123032-dedup-sorted.aln.bam.bai",
+        #"data/dedup/IVP101-SRR6123183-dedup-sorted.aln.bam.bai",
+        #"data/dedup/PL4-SRR6123031-dedup-sorted.aln.bam.bai",
+        #"data/calls/all-calls.vcf"
 
 rule get_genome:
     output:
@@ -87,7 +87,7 @@ rule align:
     input:
         reads=get_trimmed,
         ref=config["genome"],
-        index="data/genome/potato_dm_v404_all_pm_un.fasta.bwt"
+        index=config["genome"]+'.bwt'
     output:
         "data/aligned_reads/{sample}-{unit}-sorted.aln.bam"
     log:
