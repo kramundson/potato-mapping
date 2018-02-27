@@ -1,0 +1,8 @@
+rule dosage_plot: # todo: a more snakemake way to do this is make the script consider case and control only, rather than make all at once
+    input:
+        control=config["controlfile"],
+        bedfiles="data/dedup/bedfiles.txt"
+    output:
+        "data/plots/{sample}-{unit}_dosage_plot.pdf"
+    shell:
+        "Rscript scripts/dosage_plots.R {input.bedfiles} {input.control}"

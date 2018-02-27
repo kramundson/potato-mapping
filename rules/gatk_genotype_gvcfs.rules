@@ -1,0 +1,12 @@
+rule gatk_genotype_gvcfs:
+    input:
+        ref=config["genome"],
+        diploids=config["diploid_gvcfs"],
+        tetraploids=config["tetraploid_gvcfs"]
+    output:
+        "data/calls/gatk/all-calls.vcf"
+    shell:
+        "gatk-launch GenotypeGVCFs "
+        "-R {input.ref} "
+        "--variant data/calls/gatk/*.g.vcf "
+        "-O {output}"

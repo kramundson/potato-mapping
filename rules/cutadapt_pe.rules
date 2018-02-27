@@ -1,0 +1,14 @@
+rule cutadapt_pe:
+    input:
+        get_fastq
+    output:
+        fastq1="data/trimmed/{sample}-{unit}-1.fastq.gz",
+        fastq2="data/trimmed/{sample}-{unit}-2.fastq.gz",
+        qc="data/trimmed/{sample}-{unit}.qc.txt"
+    threads: 12
+    params:
+        "-a {} -A {} {}".format(config["adapter"], config["adapter"], config["params"]["cutadapt-pe"])
+    log:
+        "logs/cutadapt/{sample}-{unit}.log"
+    wrapper:
+        "0.17.4/bio/cutadapt/pe"

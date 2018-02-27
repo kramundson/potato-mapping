@@ -1,0 +1,7 @@
+rule gatk_fasta_dict:
+    input:
+        config["genome"]
+    output:
+        "data/genome/potato_dm_v404_all_pm_un.dict"
+    shell:
+        "gatk-launch CreateSequenceDictionary -R {input} -O {output}"

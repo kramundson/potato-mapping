@@ -1,0 +1,10 @@
+# no longer using freebayes for calling, but left here for posterity
+# rule freebayes:
+#     input:
+#         ref=config["genome"]
+#     output:
+#         "data/calls/all-calls.vcf"
+#     log:
+#         "logs/freebayes/all-calls.log"
+#     shell:
+#          "freebayes-parallel <(./scripts/fasta_generate_regions.py {input.ref} 1000000) 12 -m 20 -q 20 -f {input.ref} data/dedup/*.aln.bam > {output}"

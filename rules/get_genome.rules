@@ -1,0 +1,5 @@
+rule get_genome:
+    output:
+        config["genome"]
+    shell:
+        "./scripts/get_potato_genome.sh"

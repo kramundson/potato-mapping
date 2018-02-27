@@ -1,0 +1,6 @@
+rule get_SRA_reads:
+    output:
+        ["data/reads/{}".format(x) for x in units["fq1"].tolist() if x.startswith("SRR")],
+        ["data/reads/{}".format(x) for x in units["fq2"].tolist() if x.startswith("SRR")]
+    shell:
+        "scripts/get_SRA_reads.sh"

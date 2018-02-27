@@ -1,0 +1,6 @@
+rule bedfiles:
+    input:
+    output:
+        "data/dedup/bedfiles.txt"
+    shell:
+        "ls data/dedup/*_coverage.bed > data/dedup/bedfiles.txt"

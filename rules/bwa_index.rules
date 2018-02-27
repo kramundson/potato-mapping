@@ -1,0 +1,7 @@
+rule bwa_index:
+    input:
+        config["genome"]
+    output:
+        config["genome"]+".bwt"
+    shell:
+        "bwa index {input}"
