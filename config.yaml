@@ -1,6 +1,3 @@
-# path or URL to sample sheet (TSV format, columns: sample, condition, ...)
-samples: samples.tsv
-
 # path or URL to sequencing unit sheet (TSV format, columns: sample, unit, fq1, fq2)
 # Units are technical replicates (e.g., lanes or resequencing of the same biological
 # sample).
@@ -14,6 +11,9 @@ adapter: AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTGTTCCTGAGTGTAGATCTCGGTGGTCGCCGTATCATT
 params:
     cutadapt-pe: "-q 10 -m 40 -j 8"
     cutadapt-se: "-q 10 -m 40 -j 8"
+    align:
+        bwa_threads: 12
+        sort_threads: 4
 
 controlfile: "LOP868-SRR6123032_coverage.bed"
 

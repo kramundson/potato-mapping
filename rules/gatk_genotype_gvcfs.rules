@@ -1,4 +1,4 @@
-rule gatk_genotype_gvcfs:
+rule gatk_genotype_gvcfs: # todo, have this rule genotype only gvcf specified in rules
     input:
         ref=config["genome"],
         diploids=config["diploid_gvcfs"],
@@ -8,5 +8,13 @@ rule gatk_genotype_gvcfs:
     shell:
         "gatk-launch GenotypeGVCFs "
         "-R {input.ref} "
-        "--variant data/calls/gatk/*.g.vcf "
+#         "--variant data/calls/gatk/*.g.vcf "
+        # possible solution to line above.
+        # strong possibility that neither of these solutions work
+        
+        # In that case, stuff all specified .g.vcf filenames into a file, then
+        # feed that file to GenotypeGVCFs as --variant argument
+        # see here: https://gatkforums.broadinstitute.org/gatk/discussion/10873/how-do-i-specify-a-list-of-samples-for-genotypegvcfs
+        "--variant {input.diploids}"
+        "--variant {input.tetraploids}"
         "-O {output}"
