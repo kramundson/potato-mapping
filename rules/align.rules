@@ -10,8 +10,9 @@ rule align:
     params:
         rg="'@RG\\tID:{unit}\\tSM:{unit}'",
         bwa_threads=config["params"]["align"]["bwa_threads"],
-        sort_threads=config["params"]["align"]["sort_threads"]
+        sort_threads=config["params"]["align"]["sort_threads"],
+        sort_mem=config["params"]["align"]["sort_mem"]
     threads: config["params"]["align"]["bwa_threads"] + config["params"]["align"]["sort_threads"]
     shell:
         "bwa mem -r {params.rg} -t {params.bwa_threads} {input.ref} {input.reads} | "
-        "samtools sort -@{params.sort_threads} -m 4G -o {output} -"
+        "samtools sort -@{params.sort_threads} -m {params.sort_mem} -o {output} -"

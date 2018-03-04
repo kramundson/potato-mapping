@@ -1,0 +1,8 @@
+rule samtools_faidx:
+    input:
+        config["genome"]
+    output:
+        config["genome"]+".fai"
+    shell:
+        "samtools faidx {input}"
+        

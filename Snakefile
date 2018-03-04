@@ -1,3 +1,4 @@
+import glob
 import pandas as pd
 shell.executable("bash")
 
@@ -24,10 +25,9 @@ rule all:
     input:
         config["genome"],
         config["genome"]+".bwt",
-        config["targets"],
-        config["diploid_gvcfs"],
-        config["tetraploid_gvcfs"],
-        "data/calls/gatk/all-calls.vcf"
+        config["vcfs"]["diploid"],
+        config["vcfs"]["tetraploid"],
+        config["vcfs"]["combined"]
 
 # todo, specify CPU usage of all multithreaded rules in config.yaml
 

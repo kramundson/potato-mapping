@@ -14,33 +14,20 @@ params:
     align:
         bwa_threads: 12
         sort_threads: 4
+        sort_mem: 4G
+    gatk_genotype_gvcfs:
+       threads: 12
+
+vcfs:
+    diploid:
+        - data/calls/gatk/2x_LOP868_004-KFRAG_00003H.g.vcf
+        - data/calls/gatk/2x_LOP868_064-KFRAG_00028H.g.vcf
+        - data/calls/gatk/2x_LOP868_305-KFRAG_00092H.g.vcf
+        - data/calls/gatk/2x_IVP101-SRR6123183.g.vcf
+        - data/calls/gatk/2x_PL4-SRR6123031.g.vcf
+    tetraploid:
+        - data/calls/gatk/4x_LOP868-SRR6123032.g.vcf
+    combined: 
+        - data/calls/gatk/all-calls.vcf
 
 controlfile: "LOP868-SRR6123032_coverage.bed"
-
-diploid_bams:
-    - data/dedup/2x_LOP868_004-KFRAG_00003H-dedup-sorted.aln.bam
-    - data/dedup/2x_LOP868_064-KFRAG_00028H-dedup-sorted.aln.bam
-    - data/dedup/2x_LOP868_305-KFRAG_00092H-dedup-sorted.aln.bam
-    - data/dedup/2x_IVP101-SRR6123183-dedup-sorted.aln.bam
-    - data/dedup/2x_PL4-SRR6123031-dedup-sorted.aln.bam
-
-tetraploid_bams:
-    - data/dedup/4x_LOP868-SRR6123032-dedup-sorted.aln.bam
-
-diploid_gvcfs:
-    - data/calls/gatk/2x_LOP868_004-KFRAG_00003H.g.vcf
-    - data/calls/gatk/2x_LOP868_064-KFRAG_00028H.g.vcf
-    - data/calls/gatk/2x_LOP868_305-KFRAG_00092H.g.vcf
-    - data/calls/gatk/2x_IVP101-SRR6123183.g.vcf
-    - data/calls/gatk/2x_PL4-SRR6123031.g.vcf
-
-tetraploid_gvcfs:
-    - data/calls/gatk/4x_LOP868-SRR6123032.g.vcf
-
-targets:
-    - data/dedup/2x_LOP868_004-KFRAG_00003H-dedup-sorted.aln.bam.bai
-    - data/dedup/2x_LOP868_064-KFRAG_00028H-dedup-sorted.aln.bam.bai
-    - data/dedup/2x_LOP868_305-KFRAG_00092H-dedup-sorted.aln.bam.bai
-    - data/dedup/4x_LOP868-SRR6123032-dedup-sorted.aln.bam.bai
-    - data/dedup/2x_IVP101-SRR6123183-dedup-sorted.aln.bam.bai
-    - data/dedup/2x_PL4-SRR6123031-dedup-sorted.aln.bam.bai
