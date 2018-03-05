@@ -1,4 +1,5 @@
 import glob
+import re
 import pandas as pd
 shell.executable("bash")
 
@@ -39,6 +40,7 @@ include: "rules/bwa_index.rules"
 include: "rules/align.rules"
 include: "rules/mark_duplicates.rules"
 include: "rules/samtools_index.rules"
+include: "rules/samtools_faidx.rules"
 include: "rules/gatk_fasta_dict.rules"
 include: "rules/gatk_haplotypecaller_diploid.rules"
 include: "rules/gatk_haplotypecaller_tetraploid.rules"
