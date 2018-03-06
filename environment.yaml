@@ -21,5 +21,4 @@ dependencies:
   - pyyaml=3.11
   - pandas=0.20.3
   - parallel
-  - vcflib=1.0.0_rc0
-#  - vcflib=1.0.0_rc1
+  - vcflib=1.0.0_rc1
