@@ -9,7 +9,7 @@ rule gatk3_haplotypecaller_diploid:
         "data/calls/gatk/2x_{sample}-{unit}.g.vcf"
     params:
         hets=config["params"]["gatk_haplotypecaller"]["hets"]
-    log: "logs/gatk/{output}.log"
+    log: "logs/gatk/2x_{sample}-{unit}.log"
     shell:
         "gatk -R {input.ref} "
         "-T HaplotypeCaller" 

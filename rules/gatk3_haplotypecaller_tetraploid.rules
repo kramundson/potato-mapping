@@ -10,7 +10,7 @@ rule gatk3_haplotypecaller_tetraploid:
     output:
         "data/calls/gatk/4x_{sample}-{unit}.g.vcf"
     log:
-        "data/logs/gatk/{output}.log"
+        "data/logs/gatk/2x_{sample}-{unit}.log"
     shell:
         "gatk -R {input.ref} "
         "-T HaplotypeCaller "
