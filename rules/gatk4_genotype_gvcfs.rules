@@ -5,7 +5,7 @@ rule gatk4_genotype_gvcfs:
         gvcfs=config["vcfs"]["diploid"] + config["vcfs"]["tetraploid"]
     output:
         "data/calls/gatk/all-calls.vcf"
-    threads: # unsure if multithreading supported for GATK4 yet...
+    threads:
         config['params']['gatk_genotype_gvcfs']['threads']
     shell:
         "gatk-launch GenotypeGVCFs "
