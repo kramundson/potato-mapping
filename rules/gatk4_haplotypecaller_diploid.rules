@@ -7,10 +7,13 @@ rule gatk4_haplotypecaller_diploid:
         bai="data/dedup/2x_{sample}-{unit}-dedup-sorted.aln.bam.bai"
     output:
         "data/calls/gatk/2x_{sample}-{unit}.g.vcf"
+    log:
+        "data/logs/gatk/2x_{sample}-{unit}.log"
     shell:
         "gatk-launch HaplotypeCaller "
         "-R {input.ref} "
         "-I {input.bam} "
         "-ERC GVCF "
         "--ploidy 2 "
-        "-O {output}"
+        "-O {output} "
+        "2> {log}"

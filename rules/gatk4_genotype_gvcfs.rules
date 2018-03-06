@@ -7,8 +7,10 @@ rule gatk4_genotype_gvcfs:
         "data/calls/gatk/all-calls.vcf"
     threads:
         config['params']['gatk_genotype_gvcfs']['threads']
+    log: "logs/gatk/gatk4_{output}.log"
     shell:
         "gatk-launch GenotypeGVCFs "
         "-R {input.ref} "
         "$(echo {input.gvcfs} | sed 's/data/ --variant data/g') "
-        "-O {output}"
+        "-O {output} "
+        "2> {log}"
