@@ -12,10 +12,10 @@ rule gatk3_haplotypecaller_diploid:
     log: "logs/gatk/2x_{sample}-{unit}.log"
     shell:
         "gatk -R {input.ref} "
-        "-T HaplotypeCaller" 
+        "-T HaplotypeCaller "
         "-I {input.bam} "
         "-ERC GVCF "
         "-ploidy 2 "
-        "-hets {params.hets}"
+        "-hets {params.hets} "
         "-o {output} "
         "2> {log}"
