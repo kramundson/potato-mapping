@@ -7,7 +7,7 @@ rule gatk4_genotype_gvcfs:
         "data/calls/gatk/all-calls.vcf"
     threads:
         config['params']['gatk_genotype_gvcfs']['threads']
-    log: "logs/gatk/gatk4_{output}.log"
+    log: "logs/gatk/gatk4-all-calls.log"
     shell:
         "gatk-launch GenotypeGVCFs "
         "-R {input.ref} "
