@@ -9,11 +9,14 @@ rule gatk3_haplotypecaller_tetraploid:
         hets=config["params"]["gatk_haplotypecaller"]["hets"]
     output:
         "data/calls/gatk/4x_{sample}-{unit}.g.vcf"
+    log:
+        "data/logs/gatk/{output}.log"
     shell:
         "gatk -R {input.ref} "
         "-T HaplotypeCaller "
         "-I {input.bam} "
         "-ERC GVCF "
-        "--ploidy 4 "
+        "-ploidy 4 "
         "-hets {params.hets} "
-        "-o {output}"
+        "-o {output} "
+        "2> {log}
