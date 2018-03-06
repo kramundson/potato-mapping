@@ -1,14 +1,14 @@
-rule gatk_genotype_gvcfs:
+rule gatk3_genotype_gvcfs:
     input:
         ref=config["genome"],
         dict=re.sub("(\.fasta$|\.fa$)", ".dict", config["genome"]),
         gvcfs=config["vcfs"]["diploid"] + config["vcfs"]["tetraploid"]
     output:
         "data/calls/gatk/all-calls.vcf"
-    threads: # unsure if multithreading supported for GATK4 yet...
-        config['params']['gatk_genotype_gvcfs']['threads']
+    threads: config["params"]["gatk_genotype_gvcfs"]["threads"]
     shell:
-        "gatk-launch GenotypeGVCFs "
+        "gatk -T GenotypeGVCFs "
         "-R {input.ref} "
         "$(echo {input.gvcfs} | sed 's/data/ --variant data/g') "
-        "-O {output}"
+        "-nct {threads} "
+        "-o {output}"

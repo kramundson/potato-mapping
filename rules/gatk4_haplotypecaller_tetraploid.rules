@@ -1,0 +1,16 @@
+rule gatk4_haplotypecaller_tetraploid:
+    input:
+        ref=config["genome"],
+        fai=config["genome"]+".fai",
+        dict=re.sub("(\.fasta$|\.fa$)", ".dict", config["genome"]),
+        bam="data/dedup/4x_{sample}-{unit}-dedup-sorted.aln.bam",
+        bai="data/dedup/4x_{sample}-{unit}-dedup-sorted.aln.bam.bai"
+    output:
+        "data/calls/gatk/4x_{sample}-{unit}.g.vcf"
+    shell:
+        "gatk-launch HaplotypeCaller "
+        "-R {input.ref} "
+        "-I {input.bam} "
+        "-ERC GVCF "
+        "--ploidy 4 "
+        "-O {output}"

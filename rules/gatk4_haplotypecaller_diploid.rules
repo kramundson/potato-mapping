@@ -1,4 +1,4 @@
-rule gatk_haplotypecaller_diploid:
+rule gatk4_haplotypecaller_diploid:
     input:
         ref=config["genome"],
         fai=config["genome"]+".fai",

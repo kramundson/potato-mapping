@@ -1,0 +1,20 @@
+rule gatk3_haplotypecaller_diploid:
+    input:
+        ref=config["genome"],
+        fai=config["genome"]+".fai",
+        dict=re.sub("(\.fasta$|\.fa$)", ".dict", config["genome"]),
+        bam="data/dedup/2x_{sample}-{unit}-dedup-sorted.aln.bam",
+        bai="data/dedup/2x_{sample}-{unit}-dedup-sorted.aln.bam.bai"
+    output:
+        "data/calls/gatk/2x_{sample}-{unit}.g.vcf"
+    params:
+        hets=config["params"]["gatk_haplotypecaller"]["hets"]
+    shell:
+        "gatk -R {input.ref} "
+        "-T HaplotypeCaller" 
+        "-I {input.bam} "
+        "-ERC GVCF "
+        "-ploidy 2 "
+        "-hets {params.hets}"
+        "-o {output}"
+    

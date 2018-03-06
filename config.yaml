@@ -12,11 +12,12 @@ params:
     cutadapt-pe: "-q 10 -m 40 -j 8"
     cutadapt-se: "-q 10 -m 40 -j 8"
     align:
-        bwa_threads: 12
-        sort_threads: 4
+        threads: 16
         sort_mem: 4G
+    gatk_haplotypecaller:
+        hets: 0.01
     gatk_genotype_gvcfs:
-       threads: 12
+       threads: 16
 
 vcfs:
     diploid:
