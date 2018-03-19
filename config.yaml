@@ -4,18 +4,39 @@
 units: units.tsv
 
 genome: "data/genome/potato_dm_v404_all_pm_un.fasta"
+genomelink: "http://solanaceae.plantbiology.msu.edu/data/potato_dm_v404_all_pm_un.fasta.zip"
 
 # sequencing adapter
 adapter: AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTGTTCCTGAGTGTAGATCTCGGTGGTCGCCGTATCATT
 
 params:
-    cutadapt-pe: "-q 10 -m 40 -j 8"
-    cutadapt-se: "-q 10 -m 40 -j 8"
+
+    prefetch:
+        ascp: "--ascp-path '/home/kramundson/.aspera/connect/bin/ascp|/home/kramundson/.aspera/connect/etc/asperaweb_id_dsa.openssh'"
+        threads: 4
+
+    cutadapt-pe:
+        qual: "-q 10 -m 40 -j 8"
+        threads: 16
+    
+    cutadapt-se:
+        qual: "-q 10 -m 40 -j 8"
+        threads: 16
+    
     align:
         threads: 16
         sort_mem: 4G
-    gatk_haplotypecaller:
-        hets: 0.01
+    
+    make_intervals: 15000000
+    
+    gatk_haplotypecaller_diploid:
+        opt: "-ERC GVCF --heterozygosity 0.01 -ploidy 2"
+        threads: 16
+    
+    gatk_haplotypecaller_tetraploid:
+        opt: "-ERC GVCF --heterozygosity 0.01 -ploidy 4"
+        threads: 16
+    
     gatk_genotype_gvcfs:
        threads: 16
 

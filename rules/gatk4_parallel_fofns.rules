@@ -1,0 +1,16 @@
+rule gatk_parallel_fofn:
+    input:
+        "data/dedup/{sample}-{unit}-dedup-sorted.aln.bam"
+    output:
+        "fofn/{sample}-{unit}.fofn"
+    shell:
+        """
+        for i in $(cut -f 1-2 units.tsv | grep -v "sample" | tr '\t' "-")
+        do
+            while read line
+            do
+                echo 'data/calls/gatk/'$i'_' $(echo $line | sed -E 's/:|-/_/g' | sed 's/$/.g.vcf/g') | \
+                sed 's/ //g' >> 'fofn/'$i'.fofn'
+            done < data/intervals/gatk-haplocaller.intervals
+        done
+        """

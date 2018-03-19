@@ -1,4 +1,3 @@
-import glob
 import re
 import pandas as pd
 shell.executable("bash")
@@ -26,11 +25,12 @@ rule all:
     input:
         config["genome"],
         config["genome"]+".bwt",
+        "data/intervals/gatk-haplocaller.intervals",
         config["vcfs"]["diploid"],
         config["vcfs"]["tetraploid"],
         config["vcfs"]["combined"]
 
-# todo, specify CPU usage of all multithreaded rules in config.yaml
+# TODO: make sure all thread usage in all rules is specified in config.yaml
 
 include: "rules/get_genome.rules"
 include: "rules/get_SRA_reads.rules"
@@ -42,6 +42,9 @@ include: "rules/mark_duplicates.rules"
 include: "rules/samtools_index.rules"
 include: "rules/samtools_faidx.rules"
 include: "rules/gatk4_fasta_dict.rules"
-include: "rules/gatk4_haplotypecaller_diploid.rules"
-include: "rules/gatk4_haplotypecaller_tetraploid.rules"
+include: "rules/make_intervals.rules"
+include: "rules/gatk4_parallel_fofns.rules"
+include: "rules/gatk4_haplotypecaller_diploid_parallel.rules"
+include: "rules/gatk4_haplotypecaller_tetraploid_parallel.rules"
+include: "rules/gatk4_combine_sample_gvcfs.rules"
 include: "rules/gatk4_genotype_gvcfs.rules"

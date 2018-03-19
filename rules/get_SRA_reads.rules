@@ -2,5 +2,11 @@ rule get_SRA_reads:
     output:
         ["data/reads/{}".format(x) for x in units["fq1"].tolist() if x.startswith("SRR")],
         ["data/reads/{}".format(x) for x in units["fq2"].tolist() if x.startswith("SRR")]
+    params:
+        config["params"]["prefetch"]["ascp"]
+    threads:
+        config["params"]["prefetch"]["threads"]
     shell:
-        "scripts/get_SRA_reads.sh"
+        "cut -f 2 units.tsv | grep '^SRR' | "
+        "xargs prefetch {params} ; "
+        "parallel -j {threads} fastq-dump --gzip -B --split-3 -O data/reads ::: sra/*.sra"

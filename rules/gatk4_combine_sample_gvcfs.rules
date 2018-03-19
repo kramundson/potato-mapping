@@ -1,0 +1,12 @@
+rule sample_gvcf_merge:
+    input:
+        done="data/calls/gatk/{sample}-{unit}.done",
+        ref=config["genome"],
+        fofn="fofn/{sample}-{unit}.fofn"
+    output:
+        "data/calls/gatk/{sample}-{unit}.g.vcf"
+    log: "logs/gatk/{sample}-{unit}.log"
+    shell:
+        "gatk-launch CombineGVCFs -R {input.ref} "
+        "$(cat {input.fofn} | sed 's/^/--variant /g') -o {output} "
+        "2> {log}"

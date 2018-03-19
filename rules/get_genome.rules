@@ -1,5 +1,9 @@
 rule get_genome:
+    params:
+        link=config["genomelink"],
+        download=config["genomelink"].split("/")[-1]
     output:
         config["genome"]
     shell:
-        "./scripts/get_potato_genome.sh"
+        "wget -P data/genome {params.link} ; "
+        "unzip -d data/genome data/genome/{params.download}"

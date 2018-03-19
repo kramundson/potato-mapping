@@ -1,0 +1,18 @@
+rule gatk4_haplotypecaller_tetraploid_parallel:
+    input: 
+        bam="data/dedup/4x_{sample}-{unit}-dedup-sorted.aln.bam",
+        ref=config["genome"],
+        dict=re.sub("(\.fasta$|\.fa$)", ".dict", config["genome"]),
+        fai=config["genome"]+".fai",
+        fofn="fofn/4x_{sample}-{unit}.fofn",
+        intervals="data/intervals/gatk-haplocaller.intervals"
+    output:
+        "data/calls/gatk/4x_{sample}-{unit}.done"
+    params: 
+        config["params"]["gatk_haplotypecaller_tetraploid"]["opt"]
+    threads: 
+        config["params"]["gatk_haplotypecaller_tetraploid"]["threads"]
+    shell:
+        "parallel --link -j {threads} gatk-launch HaplotypeCaller {params} "
+        "-R {input.ref} -I {input.bam} -O {{1}} -L {{2}} :::: {input.fofn} "
+        ":::: {input.intervals} ; touch {output}"
