@@ -9,5 +9,5 @@ rule gatk4_combine_sample_gvcfs:
         "logs/gatk/{sample}-{unit}-combine.log"
     shell:
         "gatk-launch CombineGVCFs -R {input.ref} "
-        "$(cat {input.fofn} | sed 's/^/--variant /g') -o {output} "
+        "$(cat {input.fofn} | sed 's/^/--variant /g') -O {output} "
         "2> {log}"

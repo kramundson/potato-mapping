@@ -1,7 +1,0 @@
-rule gatk3_fasta_dict: # gatk3 uses picard, gatk4 can use gatk itself. Output is the same.
-    input:
-        config["genome"]
-    output:
-        re.sub("(\.fasta$|\.fa$)", ".dict", config["genome"])
-    shell:
-        "picard CreateSequenceDictionary R= {input} O= {output}"

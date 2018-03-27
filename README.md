@@ -1,39 +1,59 @@
-Snakemake pipeline for read alignment to potato reference genome, FreeBayes variant calling, and
-dosage plot generation. Dosage plots intended for use with low-coverage sequencing data.
+Potato mapping and variant calling from short read sequencing
 
-If miniconda3 is not installed, follow the instructions at this URL:
-http://snakemake.readthedocs.io/en/stable/tutorial/setup.html
+Before running, install the Python3 version of Miniconda
 
-Once miniconda is installed, you can  build a suitable environment from environment .yaml
+[Installation instructions](http://snakemake.readthedocs.io/en/stable/tutorial/setup.html)
 
-To run this analysis, place your reads in data/reads/ and update both samples.tsv and units.tsv
-You should provide unique unit identifiers for your reads. Multiple units may come from the same sample.
+Once Miniconda is installed, install software dependencies using included environment.yaml file.
+To set up a conda environment, see the tutorial 
 
-In other words, consider unit a unique combination of biological sample, sequencing library, and sequencing run.
-Consider a sample a unique biologcical sample that may be represented by multiple libraries and sequencing runs.
-Empty files with the appropriate format are located in data/reads that should enable a Snakemake dry run to be performed.
+[Environment creating instructions](https://conda.io/docs/user-guide/tasks/manage-environments.html#creating-an-environment-from-an-environment-yml-file)
 
-Notes for running GATK 3.x:
-Due to licensing restrictions, the bioconda recipe of GATK 3.8 does not work right out of the box.
-
-To install, first set up the conda environment, then download GATK 3.8.
-Had to download over web browser, which yielded the following .bz2:
-
-Name: GenomeAnalysisTK-3.8-1-0-gf15c1c3ef.tar.bz2
-md5sum: 8cfe4517dad2bea5b79c46ed468d62dc
-Upload to your working environment with scp or equivalent
-
-To install:
+To activate this environment on the command line:
 
 ```
-tar -xjvf GenomeAnalysisTK-3.8-1-0-gf15c1c3ef.tar.bz2
-gatk-register /path/to/GenomeAnalysisTK-3.8-1-0-gfc1c3ef/GenomeAnalysisTK.jar
+source activate <name_of_environment>
 ```
 
-I uploaded the .bz2 to ./scripts, making my version of the command
+This Snakemake workflow runs the following:
 
-```
-scp path/on/local/GenomeAnalysisTK-3.8-1-0-gf15c1c3ef.tar.bz2 path/on/server/potato-mapping/scripts
-tar -xjvf ./scripts/GenomeAnalysisTK-3.8-1-0-gf15c1c3ef.tar.bz2
-gatk-register GenomeAnalysisTK-3.8-1-0-gf15c1c3ef/GenomeAnalysisTK.jar
-```
+1. Download of DM1-3 reference genome from http://solanaceae.plantbiology.msu.edu/pgsc_download.shtml
+2. Download Illumina sequence data for all publicly available samples in units.tsv (those that start with "SRR")
+3. Read quality and adapter trimming
+4. BWA mem alignment to reference, including sam to bam conversion, bam sort, and samtools index.
+    Paired end reads should be uninterleaved and are are parsed from units.tsv by having
+    the appropriate file name in column fq2 of units.tsv. See units.tsv for example.
+    For single end reads, set the fq2 field of that row to "NaN"
+5. HaplotypeCaller from GATK4 in GVCF mode on each sample, scattered across intervals.
+6. CombineGVCFs from biological samples, using GATK4 CombineGVCFs
+7. Joint genotype calling on per-sample GVCFs using GATK4 GenotypeGVCFs
+
+Outputs:
+1. One GVCF file per sample and its index
+2. Population VCF file
+3. Currently, all intermediate files (e.g., trimmed reads, unprocessed bams, region GVCFs) 
+    are also kept. Uses too much disk space, so this will likely go away soon.
+
+Configuration:
+1. Modify units.tsv to suit your needs. Each column specifies:
+    sample: unique biological sample
+    unit: unique combination of biological sample, library prep, and sequencing run
+    fq1: name of forward read
+    fq2: name of reverse read (enter NaN here if reads are single-ended)
+    parhap: not actually used, yet
+    
+    Note: Avoid using the "-" character in the sample and unit fields.
+
+2. Place reads fq1 and fq2 in the subfolder ```data/reads/```
+3. Modify parameters, thread usage, and names of target output files in config.yaml
+4. Snakemake will automatically spawn jobs when running on a cluster. If desired, you can
+change the memory and CPU requirements of each job (as well as other params) by
+modifying the file cluster.yaml
+5. Run pipeline. In a cluster, the job can be submitted with the following command:
+
+```sbatch runSnakes.slurm```
+
+This command will run two Snakefiles in succession. The first, init_genome.snakes, 
+downloads the reference, generates reference index files, and sets up intervals that GATK4
+will operate on in parallel. The second file, Snakefile, downloads and processes sequencing
+reads.

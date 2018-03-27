@@ -1,7 +1,0 @@
-rule gatk_fasta_dict:
-    input:
-        config["genome"]
-    output:
-        re.sub("(\.fasta$|\.fa$)", ".dict", config["genome"])
-    shell:
-        "gatk-launch CreateSequenceDictionary -R {input} -O {output}"
