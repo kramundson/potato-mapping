@@ -17,39 +17,45 @@ params:
 
     cutadapt-pe:
         qual: "-q 10 -m 40 -j 8"
-        threads: 16
+        threads: 8
     
     cutadapt-se:
         qual: "-q 10 -m 40 -j 8"
-        threads: 16
+        threads: 8
     
     align:
-        threads: 16
+        threads: 8
         sort_mem: 4G
     
-    make_intervals: 15000000
+    mark_duplicates:
+#        jarpath: "/home/kramundson/miniconda3/envs/gatk-potato/share/picard-2.14.1-0/picard.jar" # run on cluster
+        jarpath: "/Users/Kirk/miniconda3/envs/potato/share/picard-2.14.1-0/picard.jar" # for debugging on local
+        java_heap: "-Xms512m -Xmx4g"
+        opt: "REMOVE_DUPLICATES=true TMP_DIR=./tmp ASSUME_SORT_ORDER=coordinate MAX_FILE_HANDLES_FOR_READ_ENDS_MAP=1000"
+
+    make_intervals: 10000000
     
     gatk_haplotypecaller_diploid:
-        opt: "-ERC GVCF --heterozygosity 0.01 -ploidy 2"
-        threads: 16
+        opt: "-ERC GVCF --heterozygosity 0.01 --indel-heterozygosity 0.001 -ploidy 2"
+        threads: 1
     
     gatk_haplotypecaller_tetraploid:
-        opt: "-ERC GVCF --heterozygosity 0.01 -ploidy 4"
-        threads: 16
+        opt: "-ERC GVCF --heterozygosity 0.01 --indel-heterozygosity 0.001 -ploidy 4"
+        threads: 1
     
     gatk_genotype_gvcfs:
-       threads: 16
+       threads: 8
 
 vcfs:
     diploid:
-        - data/calls/gatk/2x_LOP868_004-KFRAG_00003H.g.vcf
-        - data/calls/gatk/2x_LOP868_064-KFRAG_00028H.g.vcf
-        - data/calls/gatk/2x_LOP868_305-KFRAG_00092H.g.vcf
-        - data/calls/gatk/2x_IVP101-SRR6123183.g.vcf
-        - data/calls/gatk/2x_PL4-SRR6123031.g.vcf
+        - data/calls/gatk_sample/2x_LOP868_004-KFRAG_00003H.g.vcf
+        - data/calls/gatk_sample/2x_LOP868_064-KFRAG_00028H.g.vcf
+        - data/calls/gatk_sample/2x_LOP868_305-KFRAG_00092H.g.vcf
+        - data/calls/gatk_sample/2x_IVP101-SRR6123183.g.vcf
+        - data/calls/gatk_sample/2x_PL4-SRR6123031.g.vcf
     tetraploid:
-        - data/calls/gatk/4x_LOP868-SRR6123032.g.vcf
+        - data/calls/gatk_sample/4x_LOP868-SRR6123032.g.vcf
     combined: 
-        - data/calls/gatk/all-calls.vcf
+        - data/calls/all-calls.vcf
 
 controlfile: "LOP868-SRR6123032_coverage.bed"

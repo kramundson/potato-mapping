@@ -1,3 +1,7 @@
+# Run init_genome.snakes before running this Snakefile
+# This Snakefile handles dataset-specific analysis, assuming that reference genome
+# file dependencies and file of output filenames have been made using init_genome.snakes.
+
 import re
 import pandas as pd
 shell.executable("bash")
@@ -5,7 +9,7 @@ shell.executable("bash")
 configfile: "config.yaml"
 
 units = pd.read_table(config["units"], index_col=["sample", "unit"], dtype=str)
-units.index = units.index.set_levels([i.astype(str) for i in units.index.levels]) # enforce str in index
+units.index = units.index.set_levels([i.astype(str) for i in units.index.levels])
 
 def is_single_end(sample,unit):
     return pd.isnull(units.loc[(sample, unit), "fq2"])
@@ -21,30 +25,22 @@ def get_trimmed(wildcards):
     # single end sample
     return "data/trimmed/{sample}-{unit}.fastq.gz".format(**wildcards)
 
+def get_region_gvcfs(wildcards):
+    return [line.rstrip('\n') for line in open("fofn/{sample}-{unit}.fofn".format(**wildcards))]
+
 rule all:
     input:
-        config["genome"],
-        config["genome"]+".bwt",
-        "data/intervals/gatk-haplocaller.intervals",
         config["vcfs"]["diploid"],
         config["vcfs"]["tetraploid"],
         config["vcfs"]["combined"]
 
-# TODO: make sure all thread usage in all rules is specified in config.yaml
-
-include: "rules/get_genome.rules"
 include: "rules/get_SRA_reads.rules"
 include: "rules/cutadapt.rules"
 include: "rules/cutadapt_pe.rules"
-include: "rules/bwa_index.rules"
 include: "rules/align.rules"
 include: "rules/mark_duplicates.rules"
-include: "rules/samtools_index.rules"
-include: "rules/samtools_faidx.rules"
-include: "rules/gatk4_fasta_dict.rules"
-include: "rules/make_intervals.rules"
-include: "rules/gatk4_parallel_fofns.rules"
-include: "rules/gatk4_haplotypecaller_diploid_parallel.rules"
-include: "rules/gatk4_haplotypecaller_tetraploid_parallel.rules"
+include: "rules/gatk4_haplotypecaller_diploid_cluster.rules"
+include: "rules/gatk4_haplotypecaller_tetraploid_cluster.rules"
+include: "rules/gatk4_collect_sample_gvcfs.rules"
 include: "rules/gatk4_combine_sample_gvcfs.rules"
 include: "rules/gatk4_genotype_gvcfs.rules"

@@ -1,0 +1,38 @@
+# I divided this into two snakefiles. For reasons I don't understand, the function
+# get_region_gvcfs in the main Snakefile requires that all files it tries to open
+# already exist. It won't catch that these files are being made during the job.
+
+# init_genome.snakes handles initiation of reference genome file dependencies, including
+# reference genome download, fasta index and fasta dictionary creation, generation of
+# intervals to operate on in parallel, and files of output filenames for the subsequent
+# analysis steps. 
+
+# init_genome.snakes should be run before trying to run the main Snakefile.
+# At the command line, run init_genome.snakes as follows:
+# snakemake -s init_genome.snakes
+
+# Once init_genome.snakes finishes running, run the main analysis on a cluster
+# with the following command:
+# sbatch runSnakes.slurm
+
+import re
+import pandas as pd
+shell.executable("bash")
+
+configfile: "config.yaml"
+
+rule all:
+    input:
+        config["genome"],
+        config["genome"]+".bwt",
+        config["genome"]+".fai",
+        re.sub("(\.fasta$|\.fa$)", ".dict", config["genome"]),
+        "data/intervals/gatk-haplocaller.intervals",
+        "fofn/all-fofns.made"
+
+include: "rules/get_genome.rules"
+include: "rules/bwa_index.rules"
+include: "rules/samtools_faidx.rules"
+include: "rules/gatk4_fasta_dict.rules"
+include: "rules/gatk4_make_intervals.rules"
+include: "rules/gatk4_parallel_fofns.rules"

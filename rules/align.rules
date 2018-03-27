@@ -15,5 +15,5 @@ rule align:
         sort_threads=config["params"]["align"]["threads"] // 4,
         sort_mem=config["params"]["align"]["sort_mem"]
     shell:
-        "bwa mem -r {params.rg} -t {params.bwa_threads} {input.ref} {input.reads} | "
+        "bwa mem -R {params.rg} -t {params.bwa_threads} {input.ref} {input.reads} | "
         "samtools sort -@{params.sort_threads} -m {params.sort_mem} -o {output} -"
