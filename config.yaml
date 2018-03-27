@@ -28,8 +28,7 @@ params:
         sort_mem: 4G
     
     mark_duplicates:
-#        jarpath: "/home/kramundson/miniconda3/envs/gatk-potato/share/picard-2.14.1-0/picard.jar" # run on cluster
-        jarpath: "/Users/Kirk/miniconda3/envs/potato/share/picard-2.14.1-0/picard.jar" # for debugging on local
+        jarpath: "/home/kramundson/miniconda3/envs/gatk-potato/share/picard-2.14.1-0/picard.jar" # run on cluster
         java_heap: "-Xms512m -Xmx4g"
         opt: "REMOVE_DUPLICATES=true TMP_DIR=./tmp ASSUME_SORT_ORDER=coordinate MAX_FILE_HANDLES_FOR_READ_ENDS_MAP=1000"
 
