@@ -13,11 +13,11 @@
 
 date
 hostname
-cd /share/comailab/kramundson/twostep-snakes # modify path as needed
+cd /share/comailab/kramundson/potato-mapping # modify path as needed
 
 source activate gatk-potato # alter as needed
 
-snakemake -s init_genome.snakes --cluster-config cluster.yaml --cluster "sbatch -p {cluster.partition} -n {cluster.n} -t {cluster.time} -c {cluster.c} --mem-per-cpu {cluster.mempercpu}" -k -w 120
+snakemake -j 7 -s init_genome.snakes --cluster-config cluster.yaml --cluster "sbatch -p {cluster.partition} -n {cluster.n} -t {cluster.time} -c {cluster.c} --mem-per-cpu {cluster.mempercpu}" -k -w 120
 snakemake -j 10 --cluster-config cluster.yaml --cluster "sbatch -p {cluster.partition} -n {cluster.n} -t {cluster.time} -c {cluster.c} --mem-per-cpu {cluster.mempercpu}" -k -w 120
 
 source deactivate gatk-potato
