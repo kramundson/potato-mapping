@@ -1,3 +1,6 @@
+# Single node multithreaded implementation of GATK4 HaplotypeCaller using GNU Parallel
+# Hard coded to process tetraploid samples according to formatting in units.tsv
+
 rule gatk4_haplotypecaller_tetraploid_parallel:
     input: 
         bam="data/dedup/4x_{sample}-{unit}-dedup-sorted.aln.bam",

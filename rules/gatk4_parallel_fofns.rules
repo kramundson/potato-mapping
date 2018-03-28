@@ -1,27 +1,3 @@
-# mysteries of snakemake: this throws a file not found error if fofn aren't already made. They will, however, be updated if the bams are being made.
-# perhaps this is a restart issue
-
-# Screw wildcarding, just get this done
-# rule gatk4_parallel_fofns:
-#     input:
-#         "data/dedup/{sample}-{unit}-dedup-sorted.aln.bam",
-#         "data/intervals/gatk-haplocaller.intervals"
-#     output:
-#         "fofn/{sample}-{unit}.fofn"
-#     shell:
-#         """
-#         while read line 
-#             do
-#             echo 'data/calls/gatk/'$(cut -f 1-2 units.tsv | grep {wildcards.unit} | tr '\t' '-') \
-#             $(echo $line | sed -E 's/:|-/_/' | sed 's/$/.g.vcf/g') | \ 
-#             sed 's/ /-/' >> 
-#         done < data/intervals/gatk-haplocaller.intervals
-#         """
-
-# non-wildcarded. Would need to run high up in the pipeline, and not sure if later rules
-# will catch
-# Also need to change downstream rule to catch that all fofn have been made
-
 rule gatk4_parallel_fofn:
     input:
         units="units.tsv",
@@ -39,20 +15,4 @@ rule gatk4_parallel_fofn:
             done < {input.intervals}
         done
         touch {output}
-"""
-
-
-
-# shell command run to set up fofn from restart.
-# Had to set up fofn ahead of time, as Snakemake wouldn't make them for me. I don't know why.
-# Currently running 10Mb intervals on cabernet
-# 
-# 
-# for i in $(cut -f 1-2 units.tsv | grep -v "sample" | tr '\t' '-')
-# do
-#     while read line
-#     do
-#         echo 'data/calls/gatk/'$i'-' $(echo $line | sed -E 's/:|-/_/g' | sed 's/$/.g.vcf/g') | \
-#         sed 's/ //g' >> 'fofn/'$i'.fofn'
-#     done < data/intervals/gatk-haplocaller.intervals
-# done
+        """

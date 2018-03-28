@@ -1,5 +1,5 @@
-# Aim: Develop -N 1 -n 1 style Snakemake rule, wildcarding across all broken up intervals
-# of a reference genome. This should enable faster parallelization in a cluster
+# -N 1 -n 1 style rule for scattering GATK4 HaplotypeCaller jobs across a cluster
+# Hard coded to process diploid samples according to format in units.tsv
 
 rule gatk4_haplotypecaller_diploid_cluster:
     input:
@@ -11,9 +11,9 @@ rule gatk4_haplotypecaller_diploid_cluster:
         intervals="data/intervals/gatk-haplocaller.intervals",
     output:
         "data/calls/gatk/2x_{sample}-{unit}-{region}.g.vcf"
-    threads: 1
+    threads: config["params"]["gatk_haplotypecaller_diploid"]["threads"]
     params:
         config["params"]["gatk_haplotypecaller_diploid"]["opt"]
     shell:
         "gatk-launch HaplotypeCaller {params} -R {input.ref} -I {input.bam} "
-        "-O {output} -L $(echo {wildcards.region} | sed 's/_/:/' | sed 's/_/-/')" # -L format should be consistent with GATK
+        "-O {output} -L $(echo {wildcards.region} | sed 's/_/:/' | sed 's/_/-/')"

@@ -5,9 +5,9 @@ rule cutadapt_pe:
         fastq1="data/trimmed/{sample}-{unit}-1.fastq.gz",
         fastq2="data/trimmed/{sample}-{unit}-2.fastq.gz",
         qc="data/trimmed/{sample}-{unit}.qc.txt"
-    threads: 12
+    threads: config["params"]["cutadapt-pe"]["threads"]
     params:
-        "-a {} -A {} {}".format(config["adapter"], config["adapter"], config["params"]["cutadapt-pe"])
+        "-a {} -A {} {}".format(config["adapter"], config["adapter"], config["params"]["cutadapt-pe"]["qual"])
     log:
         "logs/cutadapt/{sample}-{unit}.log"
     wrapper:

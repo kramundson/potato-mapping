@@ -8,22 +8,6 @@
 # Picard memory update 16 Feb 2018: 2G throws OutOfMemory error when dedup aligned PL4 reads
 # I increased heap space to 4G, i.e., -Xms512m -Xmx4g
 
-# rule mark_duplicates:
-#     input:
-#         "data/aligned_reads/{sample}-{unit}-sorted.aln.bam"
-#     output:
-#         bam="data/dedup/{sample}-{unit}-dedup-sorted.aln.bam",
-#         metrics="data/dedup/{sample}-{unit}-metrics.txt"
-#     log:
-#         "logs/picard/{sample}-{unit}.log"
-#     params:
-#         "REMOVE_DUPLICATES=true",
-#         "TMP_DIR=./temp",
-#         "ASSUME_SORT_ORDER=coordinate",
-#         "MAX_FILE_HANDLES_FOR_READ_ENDS_MAP=1000"
-#     wrapper:
-#         "0.19.3/bio/picard/markduplicates"
-
 # Added wrapper-independent implementation to specify java heap space on command line
 # for implementing on cluster.
 

@@ -19,6 +19,6 @@ rule gatk4_make_intervals:
                         if i + chunk_int > end:
                             outstr=chrom + str(i) + "-" + str(end) + "\n"
                         else:
-                            outstr=chrom + ":" + str(i) + "-" + str(i + chunk_int - 1) + "\n"
+                            outstr=chrom + str(i) + "-" + str(i + chunk_int - 1) + "\n"
                         o.write(outstr)
         o.close()

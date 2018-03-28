@@ -1,3 +1,6 @@
+# -N 1 -n 1 style rule for scattering jobs across cluster
+# Hard coded to process tetraploid samples as specified in units.tsv
+
 rule gatk4_haplotypecaller_tetraploid_cluster:
     input:
         bam="data/dedup/4x_{sample}-{unit}-dedup-sorted.aln.bam",
@@ -8,7 +11,7 @@ rule gatk4_haplotypecaller_tetraploid_cluster:
         intervals="data/intervals/gatk-haplocaller.intervals",
     output:
         "data/calls/gatk/4x_{sample}-{unit}-{region}.g.vcf"
-    threads: 1
+    threads: config["params"]["gatk_haplotypecaller_tetraploid"]["threads"]
     params:
         config["params"]["gatk_haplotypecaller_diploid"]["opt"]
     shell:
