@@ -1,0 +1,17 @@
+rule gatk4_make_scaffold_intervals:
+    input:
+        config["genome"]
+    output:
+        "data/intervals/gatk-haplocaller.intervals"
+    run:
+        ofh = output[0]
+        o = open(ofh, 'w')
+        with open(input[0]) as handle:
+            for record in SeqIO.parse(handle, 'fasta'):
+                start = 1
+                outputstr = ""
+                for match in re.finditer('N{50000}', str(record.seq)):
+                    outputstr += (record.id + ":" + str(start) + "-" + str(match.start()) +'\n')
+                    start = match.end() + 1 # start becomes 1-based match end for next gap
+                outputstr += (record.id + ":" + str(start) + "-" + str(len(record)) +'\n') # last nongap in fasta record
+                o.write(outputstr)

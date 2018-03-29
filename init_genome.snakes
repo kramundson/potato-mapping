@@ -15,6 +15,7 @@
 # with the following command:
 # sbatch runSnakes.slurm
 
+from Bio import SeqIO
 import re
 import pandas as pd
 shell.executable("bash")
@@ -34,5 +35,6 @@ include: "rules/get_genome.rules"
 include: "rules/bwa_index.rules"
 include: "rules/samtools_faidx.rules"
 include: "rules/gatk4_fasta_dict.rules"
-include: "rules/gatk4_make_intervals.rules"
+include: "rules/gatk4_make_scaffold_intervals.rules"
+# include: "rules/gatk4_make_intervals.rules"
 include: "rules/gatk4_parallel_fofns.rules"

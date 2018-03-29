@@ -1,4 +1,8 @@
-rule gatk4_make_intervals:
+# Generates fixed-size intervals for running GATK4 HaplotypeCaller in parallel on cluster
+# Splits scaffolds, and is subject to minor edge effects.
+# Updated version splits at scaffold joins, which are delineated by 50000 "N" nucleotides
+
+rule gatk4_make_fixed_intervals:
     input:
         dict=re.sub("(\.fasta$|\.fa$)", ".dict", config["genome"]),
     output:

@@ -1,0 +1,13 @@
+rule gatk4_gather_sample_gvcfs:
+    input:
+        config["genome"],
+        "fofn/{sample}-{unit}.fofn",
+        get_region_gvcfs
+    output:
+        "data/calls/gatk_sample/{sample}-{unit}.g.vcf"
+    log:
+        "logs/gatk/{sample}-{unit}-cat.log"
+    shell:
+        "gatk-launch GatherVcfs -R {input[0]} "
+        "$(cat {input[1]} | sed 's/^/--INPUT=/g') --OUTPUT={output} "
+        " 2> {log}"
