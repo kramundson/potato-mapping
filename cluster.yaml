@@ -61,8 +61,13 @@
         "mempercpu" : "16G",
         "time" : "3-00:00:00"
     },
-    "gatk4_combine_sample_gvcfs" :
-    { default },
+    "gatk4_combine_sample_gvcfs" : # crashes when provided 2G/CPU. Adjust cluster allocation and Java heap space
+    {
+    "N" : 1,
+    "c" : 1,
+    "mempercpu" : "16G"
+    "time" : "0-04:00:00"
+    },
     "gatk4_genotype_gvcfs":
     {
         "N" : 1,

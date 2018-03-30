@@ -7,7 +7,19 @@ rule gatk4_gather_sample_gvcfs:
         "data/calls/gatk_sample/{sample}-{unit}.g.vcf"
     log:
         "logs/gatk/{sample}-{unit}-cat.log"
+    #     experimental patch, worked on single node, todo validate on cluster
+    params:
+        jarpath=config["params"]["gather_gvcfs"]["jarpath"]
+        java_heap=config["params"]["gather_gvcfs"]["java_heap"]
+        opt=config["params"]["gather_gvcfs"]["opt"]
     shell:
-        "gatk-launch GatherVcfs -R {input[0]} "
-        "$(cat {input[1]} | sed 's/^/--INPUT=/g') --OUTPUT={output} "
-        " 2> {log}"
+        "java {params.java_heap} -jar {params.jarpath} GatherVcfs "
+        "--REFERENCE_SEQUENCE={input[0]} "
+        "$(cat {input[1]} sed 's/^/--INPUT=/g') --OUTPUT={output} {params.opt} "
+        ">2 {log}"
+
+#     tested in cluster, crashed. not sure if due to slurm memory allocation, java heap space, or both
+#     shell:
+#         "gatk-launch GatherVcfs -R {input[0]} "
+#         "$(cat {input[1]} | sed 's/^/--INPUT=/g') --OUTPUT={output} "
+#         " 2> {log}"

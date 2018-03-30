@@ -32,7 +32,7 @@ params:
         java_heap: "-Xms512m -Xmx4g"
         opt: "REMOVE_DUPLICATES=true TMP_DIR=./tmp ASSUME_SORT_ORDER=coordinate MAX_FILE_HANDLES_FOR_READ_ENDS_MAP=1000"
 
-    make_intervals: 10000000
+    make_intervals: 10000000 # no longer used with scaffold interval implementation
     
     gatk_haplotypecaller_diploid:
         opt: "-ERC GVCF --heterozygosity 0.01 --indel-heterozygosity 0.001 -ploidy 2"
@@ -41,6 +41,12 @@ params:
     gatk_haplotypecaller_tetraploid:
         opt: "-ERC GVCF --heterozygosity 0.01 --indel-heterozygosity 0.001 -ploidy 4"
         threads: 1
+    
+    # experimental, test if necessary
+    gather_gvcfs:
+        jarpath: "/home/kramundson/miniconda3/envs/gatk-potato/share/gatk4-4.0.1.2-0/gatk-package-4.0.1.2-local.jar"
+        java_heap: "-Xms512m -Xmx12g"
+        opt: "--VERBOSITY=INFO --QUIET=false --VALIDATION_STRINGENCY=STRICT --COMPRESSION_LEVEL=1 --MAX_RECORDS_IN_RAM=500000 --CREATE_INDEX=true --CREATE_MD5_FILE=false --GA4GH_CLIENT_SECRETS=client_secrets.json --help=false --version=false --showHidden=false --USE_JDK_DEFLATER=false --USE_JDK_INFLATER=false"
     
     gatk_genotype_gvcfs:
        threads: 8
