@@ -14,7 +14,7 @@ rule gatk4_haplotypecaller_tetraploid_cluster:
         "data/calls/gatk/4x_{sample}-{unit}-{region}.g.vcf"
     threads: config["params"]["gatk_haplotypecaller_tetraploid"]["threads"]
     params:
-        config["params"]["gatk_haplotypecaller_diploid"]["opt"]
+        config["params"]["gatk_haplotypecaller_tetraploid"]["opt"]
     shell:
         "gatk-launch HaplotypeCaller {params} -R {input.ref} -I {input.bam} "
         "-O {output} -L $(echo {wildcards.region} | sed 's/_/:/' | sed 's/_/-/')" # -L format should be consistent with GATK
