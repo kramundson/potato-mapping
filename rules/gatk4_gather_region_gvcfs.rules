@@ -9,8 +9,8 @@ rule gatk4_gather_sample_gvcfs:
         "logs/gatk/{sample}-{unit}-cat.log"
     #     experimental patch, worked on single node, todo validate on cluster
     params:
-        jarpath=config["params"]["gather_gvcfs"]["jarpath"]
-        java_heap=config["params"]["gather_gvcfs"]["java_heap"]
+        jarpath=config["params"]["gather_gvcfs"]["jarpath"],
+        java_heap=config["params"]["gather_gvcfs"]["java_heap"],
         opt=config["params"]["gather_gvcfs"]["opt"]
     shell:
         "java {params.java_heap} -jar {params.jarpath} GatherVcfs "

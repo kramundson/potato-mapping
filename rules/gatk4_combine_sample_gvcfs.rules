@@ -1,13 +1,13 @@
 rule gatk4_combine_sample_gvcfs:
     input:
-        done="data/calls/gatk/{sample}-{unit}.done",
         ref=config["genome"],
-        fofn="fofn/{sample}-{unit}.fofn"
+        dict=re.sub("(\.fasta$|\.fa$)", ".dict", config["genome"]),
+        gvcfs=config["vcfs"]["diploid"] + config["vcfs"]["tetraploid"]
     output:
-        "data/calls/gatk_sample/{sample}-{unit}.g.vcf"
+        "data/calls/gatk_sample/all-calls.g.vcf"
     log:
-        "logs/gatk/{sample}-{unit}-combine.log"
+        "logs/gatk/gatk4-all-calls.g.vcf.log"
     shell:
         "gatk-launch CombineGVCFs -R {input.ref} "
-        "$(cat {input.fofn} | sed 's/^/--variant /g') -O {output} "
+        "$(echo {input.gvcfs} | sed 's/data/ --variant data/g') -O {output} "
         "2> {log}"

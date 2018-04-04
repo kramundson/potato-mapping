@@ -1,6 +1,6 @@
 # Run init_genome.snakes before running this Snakefile
 # This Snakefile handles dataset-specific analysis, assuming that reference genome
-# file dependencies and file of output filenames have been made using init_genome.snakes.
+# file dependencies and file of output filenames have been made using init_genome.snakes
 
 import re
 import pandas as pd
@@ -41,7 +41,6 @@ include: "rules/align.rules"
 include: "rules/mark_duplicates.rules"
 include: "rules/gatk4_haplotypecaller_diploid_cluster.rules"
 include: "rules/gatk4_haplotypecaller_tetraploid_cluster.rules"
-include: "rules/gatk4_gather_sample_gvcfs.rules"
-# include: "rules/gatk4_collect_sample_gvcfs.rules"
-# include: "rules/gatk4_combine_sample_gvcfs.rules"
+include: "rules/gatk4_gather_region_gvcfs.rules"
+include: "rules/gatk4_combine_sample_gvcfs.rules"
 include: "rules/gatk4_genotype_gvcfs.rules"

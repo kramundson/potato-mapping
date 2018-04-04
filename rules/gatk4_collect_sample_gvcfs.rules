@@ -1,8 +1,0 @@
-rule collect_sample_gvcfs: # better, get_region_gvcfs could be improved to be per sample instead of per cohort
-    input:
-        "fofn/{sample}-{unit}.fofn",
-        get_region_gvcfs
-    output:
-        "data/calls/gatk/{sample}-{unit}.done"
-    shell:
-        "touch {output}"

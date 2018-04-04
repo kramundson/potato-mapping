@@ -1,9 +1,0 @@
-rule bedtools_coverage:
-    input:
-        bam="data/dedup/{sample}-{unit}-dedup-sorted.aln.bam",
-        genome=config["genome"],
-        windows="data/genome/potato_dm_v404_all_pm_un_1Mb_windows.bed"
-    output:
-        "data/dedup/{sample}-{unit}_coverage.bed"
-    shell:
-        "bedtools coverage -sorted -nonamecheck -header -g {input.genome} -a {input.windows} -b {input.bam} > {output}"

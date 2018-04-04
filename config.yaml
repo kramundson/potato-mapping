@@ -49,7 +49,8 @@ params:
         opt: "--VERBOSITY=INFO --QUIET=false --VALIDATION_STRINGENCY=STRICT --COMPRESSION_LEVEL=1 --MAX_RECORDS_IN_RAM=500000 --CREATE_INDEX=true --CREATE_MD5_FILE=false --GA4GH_CLIENT_SECRETS=client_secrets.json --help=false --version=false --showHidden=false --USE_JDK_DEFLATER=false --USE_JDK_INFLATER=false"
     
     gatk_genotype_gvcfs:
-       threads: 8
+        #threads: 8 # not supported in GATK4
+        opt: "--heterozygosity 0.01 --indel-heterozygosity 0.001"
 
 vcfs:
     diploid:

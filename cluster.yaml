@@ -54,7 +54,7 @@
         "mempercpu" : "16G",
         "time" : "3-00:00:00"
     },
-    "gatk4_haplotypecaller_tetraploid_cluster": # todo adjust
+    "gatk4_haplotypecaller_tetraploid_cluster" : # todo adjust
     {
         "N" : 1,
         "c" : 1,
@@ -66,9 +66,9 @@
     "N" : 1,
     "c" : 1,
     "mempercpu" : "16G",
-    "time" : "0-04:00:00"
+    "time" : "1-00:00:00"
     },
-    "gatk4_genotype_gvcfs":
+    "gatk4_genotype_gvcfs" :
     {
         "N" : 1,
         "c" : 8,

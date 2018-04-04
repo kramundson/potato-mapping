@@ -1,8 +1,0 @@
-rule bedtools_init:
-    input:
-        ref=config["genome"]
-    output:
-        "data/genome/potato_dm_v404_all_pm_un_1Mb_windows.bed",
-        "data/genome/potato_dm_v404_all_pm_un.genome"
-    shell:
-        "./scripts/bedtools-init.sh"

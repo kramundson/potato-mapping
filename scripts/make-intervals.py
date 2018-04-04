@@ -1,46 +1,23 @@
-import sys
-
-"""
-USAGE:
-
-To be run in snakemake pipeline from ./potato-mapping in rule
-
-script:
-    scripts/make_intervals.py <chunksize>
-"""
-
-def make_intervals(chunksize):
-
-    """
-    Reading from file potato_dm_v404_all_pm_un.dict, return 1 line for each genomic
-    window of fixed size. The size is determined from the argument chunksize. 
-    Each output line is a 1-based interval of a specific chromosome, e.g.,
-    
-    chr01:1-1000000 # first interval line
-    chr01:1000001-2000000 # second interval line
-    
-    For the final interval of a chromosome, return a shortened interval.
-    If the length of chr01 is 88663952:
-    
-    chr01:88000000-88663952 # final interval file of chromosome 1
-    """
-
-    chunk_int = int(chunksize)
-    ofh="potato_"+sys.argv[1]+".intervals"
-    o=open(ofh, 'w')
-    with open("data/genome/potato_dm_v404_all_pm_un.dict") as f:
+def scatter_gvcf(): # remove wildcards arg if debugging without Snakemake
+# def scatter_gvcf(wildcards): # note, will need to add wildcards arg when using with Snakemake
+    chunk_int=int(1.5e7) # temp hardcode at 15Mb
+    intervals=[] # temp initiate empty list. Populate and pass to return.
+    with open("../data/genome/potato_dm_v404_all_pm_un.dict") as f:
         for line in f:
             if line.startswith("@SQ\tSN:"):
-                l = line.split('\t') # consider reducing this to one line
-                chrom = l[1].split(":")[1]
-                end = int(l[2].split(":")[1])
-                for i in range(1, end, chunk_int):
+                l = line.split('\t')
+                chrom=l[1].split(":")[1]
+                end=int(l[2].split(":")[1])
+                for i in range(0, end, chunk_int):
                     if i + chunk_int > end:
-                        outstr = chrom + ":" + str(i) + "-" + str(end) + "\n"
+                        out= chrom + ":" + str(i) + "-" + str(end)
                     else:
-                        outstr = chrom + ":" + str(i) + "-" + str(i+chunk_int-1) + "\n"
-                    o.write(outstr)
-    o.close()
+                        out=chrom + ":" + str(i) + "-" + str(i+chunk_int)
+                    intervals.append(out)
+#     return intervals
+    return expand("path/gatk/2x_{sample}-{unit}-{window}.g.vcf", window=[intervals], **wildcards)
+    # make a list of all genomic regions. I've done this in the past
+    #return expand("data/calls/gatk/2x_{sample}-{unit}-{region}.g.vcf", region=
 
 if __name__ == "__main__":
-    make_intervals(sys.argv[1])
+    print(scatter_gvcf())

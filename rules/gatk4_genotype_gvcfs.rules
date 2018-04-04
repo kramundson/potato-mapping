@@ -2,14 +2,16 @@ rule gatk4_genotype_gvcfs:
     input:
         ref=config["genome"],
         dict=re.sub("(\.fasta$|\.fa$)", ".dict", config["genome"]),
-        gvcfs=config["vcfs"]["diploid"] + config["vcfs"]["tetraploid"]
+        calls="data/calls/gatk_sample/all-calls.g.vcf"
     output:
         "data/calls/all-calls.vcf"
-    threads: config['params']['gatk_genotype_gvcfs']['threads']
-    log: "logs/gatk/gatk4-all-calls.log"
+    log: "logs/gatk/gatk4-all-calls.vcf.log"
+    params: config["params"]["gatk_genotype_gvcfs"]["opt"]
     shell:
         "gatk-launch GenotypeGVCFs "
         "-R {input.ref} "
-        "$(echo {input.gvcfs} | sed 's/data/ --variant data/g') "
+        "--variant {input.calls} "
         "-O {output} "
+        "{params} "
         "2> {log}"
+
