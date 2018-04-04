@@ -10,7 +10,7 @@ rule align:
     threads:
         config["params"]["align"]["threads"]
     params:
-        rg="'@RG\\tID:{unit}\\tSM:{unit}'",
+        rg="'@RG\\tID:{unit}\\tSM:{sample}'",
         bwa_threads=3*config["params"]["align"]["threads"] // 4,
         sort_threads=config["params"]["align"]["threads"] // 4,
         sort_mem=config["params"]["align"]["sort_mem"]

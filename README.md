@@ -44,11 +44,11 @@ Configuration:
     
     Note: Avoid using the "-" character in the sample and unit fields.
 
-2. Place reads fq1 and fq2 in the subfolder ```data/reads/```
+2. Place reads described in fq1 and fq2 not from SRA in the subfolder ```data/reads/```
 3. Modify parameters, thread usage, and names of target output files in config.yaml
 4. Snakemake will automatically spawn jobs when running on a cluster. If desired, you can
 change the memory and CPU requirements of each job (as well as other params) by
-modifying the file cluster.yaml
+modifying the file cluster.yaml. The params specified in cluster.yaml worked.
 5. Run pipeline. In a cluster, the job can be submitted with the following command:
 
 ```sbatch runSnakes.slurm```

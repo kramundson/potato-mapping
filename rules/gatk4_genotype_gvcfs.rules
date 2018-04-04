@@ -14,4 +14,3 @@ rule gatk4_genotype_gvcfs:
         "-O {output} "
         "{params} "
         "2> {log}"
-

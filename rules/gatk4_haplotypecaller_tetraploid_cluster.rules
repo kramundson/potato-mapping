@@ -17,4 +17,4 @@ rule gatk4_haplotypecaller_tetraploid_cluster:
         config["params"]["gatk_haplotypecaller_tetraploid"]["opt"]
     shell:
         "gatk-launch HaplotypeCaller {params} -R {input.ref} -I {input.bam} "
-        "-O {output} -L $(echo {wildcards.region} | sed 's/_/:/' | sed 's/_/-/')" # -L format should be consistent with GATK
+        "-O {output} -L $(echo {wildcards.region} | sed 's/_/:/' | sed 's/_/-/')"
