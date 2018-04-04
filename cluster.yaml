@@ -69,6 +69,7 @@
     "time" : "1-00:00:00"
     },
     "gatk4_combine_sample_gvcfs" :
+    {
         "N" : 1,
         "c" : 1,
         "mempercpu" : "16G",
