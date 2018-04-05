@@ -12,7 +12,7 @@ adapter: AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTGTTCCTGAGTGTAGATCTCGGTGGTCGCCGTATCATT
 params:
 
     prefetch:
-        ascp: "--ascp-path '/home/kramundson/.aspera/connect/bin/ascp|/home/kramundson/.aspera/connect/etc/asperaweb_id_dsa.openssh'"
+        ascp: "--ascp-path '/home/kramundson/.aspera/connect/bin/ascp|/home/kramundson/.aspera/connect/etc/asperaweb_id_dsa.openssh' --max-size 50000000000"
         threads: 4
 
     cutadapt-pe:

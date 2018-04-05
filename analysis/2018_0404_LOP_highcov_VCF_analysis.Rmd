@@ -1,0 +1,254 @@
+---
+title: "2018_0404_LOP_highcov_VCF_analysis"
+author: "Kirk Amundson"
+output: html_notebook
+---
+
+Aim: Using deep sequencing of LOP parents and three haploids, determine quality metrics of SNP
+identified as potential haploid inducer introgressions in low-coverage haploid sequencing
+
+Hypothesis: Repeated HI SNP calls in low-coverage data are due to insufficient sequencing
+depth of LOP868-Alca Tarma. Specifically, there are too few observations of the minor allele
+in, e.g., 0/0/0/1 or 0/1/1/1 calls. This should be reflected in the genotype quality field 
+of the VCF.
+
+```{r}
+library(vcfR)
+library(ape)
+library(ggplot2)
+```
+
+```{r}
+# follows example listed here: https://cran.r-project.org/web/packages/vcfR/vignettes/intro_to_vcfR.html
+# read in data, start with chr04
+# did this because all-calls.vcf is too large to read into memory on laptop
+vcf <- read.vcfR("../data/calls/chr04-calls.vcf", verbose=F)
+
+
+# try try try to read in a gene annotation gff as well...
+gff <- read.csv("~/Desktop/Comai_Lab/potato_informatics/data/PGSC_DM_V403_genes.gff3", sep='\t', quote="",
+                comment.char = "#", header=F)
+
+# filter gff for chr04 only
+gff.chr04 <- subset(gff, V1 == "chr04")
+
+# read in potato DM1-3 reference as fasta
+dna <- ape::read.dna("~/Desktop/Comai_Lab/potato_informatics/data/potato_dm_v404_all_pm_un.fasta", format="fasta")
+# subset only chromosome 4. code taken from: https://knausb.github.io/vcfR_documentation/subset_data_to_1chrom.html
+dna2 <- dna[grep("chr04", names(dna))]
+names(dna2) <- 'chr04'
+dna2 <- as.matrix(dna2)
+```
+
+```{r}
+# Once data are in memory, create a chromR object. Takes an eternity on laptop.
+chrom <- create.chromR(name="chr04", vcf=vcf, seq=dna2, ann=gff.chr04)
+```
+
+
+Filter, keeping only parent-informative loci. To start, compare all positions that are homozygous for one genotype in Alca Tarma
+and homozygous for the other genotype in both haploid inducers. Consider only biallelic sites, and disregard the haploid inducers for now.
+
+```{r}
+plot(chrom)
+```
+
+Axes are too collapsed to really make anything of this. Needs more filtering.
+
+Compare distributions of GQ for all SNPs vs. putatively HI-specific
+
+```{r}
+chrom <- masker(chrom, min_QUAL = 1, min_DP = 50, max_DP = 600, min_MQ = 30, max_MQ = 100)
+plot(chrom)
+```
+
+```{r}
+# adjust filter settings
+chrom <- masker(chrom, min_DP = 200, max_DP = 300, min_MQ = 59.9, max_MQ = 60.1)
+plot(chrom)
+```
+
+```{r}
+chrom <- proc.chromR(chrom, verbose=T) # takes a few minutes to run
+plot(chrom)
+```
+
+```{r}
+chromoqc(chrom, dp.alpha = 20)
+```
+
+Convert VCF to table format using GATK VariantsToTable.
+This extracts fields from a VCF file to a tab-delimited table for easier parsing.
+Generally, writing your own custom VCF parser is frowned upon
+
+```{r}
+# read in data
+parsed.chr04 <- read.csv("parsed-chr04-calls.txt", header=T, sep='\t')
+head(parsed.chr04)
+View(parsed.chr04)
+nrow(parsed.chr04) # about 3M SNP just on this chromosome...
+```
+
+```{r}
+colnames(parsed.chr04)
+```
+
+As a preliminary filter, I wrote a Python script (saved in ../scripts/parentVcfTableFilter.py) that does the following:
+
+    1. Discard loci with missing data in any of the parental 3 genotypes.
+    
+    2. Discard loci with identical alleles in 4x parent and union of inducers.
+    
+    3. If loci passes steps 1 and 2, subtract 4x parent alleles from union of 
+       inducer alleles. This is assigned to a Python set called "test_set". The number of
+       loci that pass these criteria is saved as a counter called "testable_pos".
+       
+    4. For each dihaploid at a given position, make a set of alleles of the dihaploid at
+       hand and test whether this intersects with test_set. Record result of this test as
+       a Boolean T/F.
+       
+    5. Write out input file line and results of test to a new tab-delimited file
+    
+    6. For each dihaploid, keep a count of each locus that returns TRUE in this test.
+       When the script is done, print counters testable_pos and per-dihaploid 
+       counts of loci with HI alleles to STDOUT.
+       
+The output of this file is saved as ./filtered-parsed-chr04-calls.txt
+       
+Next, I'll import this table back into R for further filtering. I'm particularly interested in learning about emergent quality statistics of positions that are being scored as HI introgression. Are these real?
+
+```{r}
+# read in data
+filtered.chr04 <- read.csv("filtered-parsed-chr04-calls.txt", header=T, sep='\t')
+head(filtered.chr04)
+```
+
+For dihaploid LOP868_004, examine distribution of GQ values of all loci, HI-matching loci, and non-HI-matching loci
+
+```{r}
+ggplot(filtered.chr04, aes(x=KFRAG_00003H.GQ)) + geom_density(fill="red", alpha = 0.4)
+```
+
+```{r}
+ggplot(subset(filtered.chr04, KFRAG_00003H_match_HI == TRUE), aes(x=KFRAG_00003H.GQ)) + geom_density(fill="blue", alpha = 0.4)
+```
+
+```{r}
+ggplot(subset(filtered.chr04, KFRAG_00003H_match_HI == FALSE), aes(x=KFRAG_00003H.GQ)) + geom_density(fill="green", alpha = 0.4)
+```
+
+Overlay all of them because why not?
+
+```{r}
+ggplot(filtered.chr04, aes(x=KFRAG_00003H.GQ)) + geom_density(fill="red", alpha = 0.4) +
+  geom_density(data=subset(filtered.chr04, KFRAG_00003H_match_HI == FALSE), aes(x=KFRAG_00003H.GQ), fill="green", alpha=0.4) +
+  geom_density(data=subset(filtered.chr04, KFRAG_00003H_match_HI == TRUE), aes(x=KFRAG_00003H.GQ), fill="blue", alpha=0.4)
+```
+
+Distibution of locus DP values for TRUE FALSE ALL
+
+```{r}
+ggplot(filtered.chr04, aes(x=KFRAG_00003H.DP)) + geom_density(fill="red", alpha = 0.4) +
+  geom_density(data=subset(filtered.chr04, KFRAG_00003H_match_HI == FALSE), aes(x=KFRAG_00003H.DP), fill="green", alpha=0.4) +
+  geom_density(data=subset(filtered.chr04, KFRAG_00003H_match_HI == TRUE), aes(x=KFRAG_00003H.DP), fill="blue", alpha=0.4) +
+  scale_x_continuous(limits = c(0,100))
+```
+
+> Called TRUE loci have a strong shift to lower depth in KFRAG_0003, illustrating that some TRUE positions have very low read depth support.
+
+Plot genotype quality distibutions of indels only
+
+```{r}
+ggplot(subset(filtered.chr04, TYPE == "INDEL"), aes(x=KFRAG_00003H.GQ)) + geom_density(fill="red", alpha = 0.4) +
+  geom_density(data=subset(filtered.chr04, KFRAG_00003H_match_HI == FALSE & TYPE == "INDEL"), aes(x=KFRAG_00003H.GQ), fill="green", alpha=0.4) +
+  geom_density(data=subset(filtered.chr04, KFRAG_00003H_match_HI == TRUE & TYPE == "INDEL"), aes(x=KFRAG_00003H.GQ), fill="blue", alpha=0.4)
+```
+
+Plot GQ distribution of SNPs only
+
+```{r}
+ggplot(subset(filtered.chr04, TYPE == "SNP"), aes(x=KFRAG_00003H.GQ)) + geom_density(fill="red", alpha = 0.4) +
+  geom_density(data=subset(filtered.chr04, KFRAG_00003H_match_HI == FALSE & TYPE == "SNP"), aes(x=KFRAG_00003H.GQ), fill="green", alpha=0.4) +
+  geom_density(data=subset(filtered.chr04, KFRAG_00003H_match_HI == TRUE & TYPE == "SNP"), aes(x=KFRAG_00003H.GQ), fill="blue", alpha=0.4)
+```
+
+What about the other two dihaploids?
+
+KFRAG_00028H (LOP868_064)
+```{r}
+# GQ distribution of SNP and indel loci for KFRAG_00028H
+ggplot(filtered.chr04, aes(x=KFRAG_00028H.GQ)) + geom_density(fill="red", alpha = 0.4) +
+  geom_density(data=subset(filtered.chr04, KFRAG_00028H_match_HI == FALSE), aes(x=KFRAG_00028H.GQ), fill="green", alpha=0.4) +
+  geom_density(data=subset(filtered.chr04, KFRAG_00028H_match_HI == TRUE), aes(x=KFRAG_00028H.GQ), fill="blue", alpha=0.4)
+```
+
+```{r}
+# DP distibution of SNP and indel loci for KFRAG_00028H
+ggplot(filtered.chr04, aes(x=KFRAG_00003H.DP)) + geom_density(fill="red", alpha = 0.4) +
+  geom_density(data=subset(filtered.chr04, KFRAG_00003H_match_HI == FALSE), aes(x=KFRAG_00003H.DP), fill="green", alpha=0.4) +
+  geom_density(data=subset(filtered.chr04, KFRAG_00003H_match_HI == TRUE), aes(x=KFRAG_00003H.DP), fill="blue", alpha=0.4) +
+  scale_x_continuous(limits = c(0,100))
+```
+
+```{r}
+# GQ distribution of only indel loci for KFRAG_00028H
+ggplot(subset(filtered.chr04, TYPE == "INDEL"), aes(x=KFRAG_00028H.GQ)) + geom_density(fill="red", alpha = 0.4) +
+  geom_density(data=subset(filtered.chr04, KFRAG_00028H_match_HI == FALSE & TYPE == "INDEL"), aes(x=KFRAG_00028H.GQ), fill="green", alpha=0.4) +
+  geom_density(data=subset(filtered.chr04, KFRAG_00028H_match_HI == TRUE & TYPE == "INDEL"), aes(x=KFRAG_00028H.GQ), fill="blue", alpha=0.4)
+```
+
+```{r}
+# GQ distribution of only SNP loci for KFRAG_00028H
+ggplot(subset(filtered.chr04, TYPE == "SNP"), aes(x=KFRAG_00028H.GQ)) + geom_density(fill="red", alpha = 0.4) +
+  geom_density(data=subset(filtered.chr04, KFRAG_00028H_match_HI == FALSE & TYPE == "SNP"), aes(x=KFRAG_00028H.GQ), fill="green", alpha=0.4) +
+  geom_density(data=subset(filtered.chr04, KFRAG_00028H_match_HI == TRUE & TYPE == "SNP"), aes(x=KFRAG_00028H.GQ), fill="blue", alpha=0.4)
+```
+
+KFRAG_00092H (LOP868_305)
+```{r}
+# GQ distribution of SNP and indel loci for KFRAG_00092H
+ggplot(filtered.chr04, aes(x=KFRAG_00092H.GQ)) + geom_density(fill="red", alpha = 0.4) +
+  geom_density(data=subset(filtered.chr04, KFRAG_00092H_match_HI == FALSE), aes(x=KFRAG_00092H.GQ), fill="green", alpha=0.4) +
+  geom_density(data=subset(filtered.chr04, KFRAG_00092H_match_HI == TRUE), aes(x=KFRAG_00092H.GQ), fill="blue", alpha=0.4)
+```
+
+```{r}
+# DP distibution of SNP and indel loci for KFRAG_00092H
+ggplot(filtered.chr04, aes(x=KFRAG_00003H.DP)) + geom_density(fill="red", alpha = 0.4) +
+  geom_density(data=subset(filtered.chr04, KFRAG_00003H_match_HI == FALSE), aes(x=KFRAG_00003H.DP), fill="green", alpha=0.4) +
+  geom_density(data=subset(filtered.chr04, KFRAG_00003H_match_HI == TRUE), aes(x=KFRAG_00003H.DP), fill="blue", alpha=0.4) +
+  scale_x_continuous(limits = c(0,100))
+```
+
+```{r}
+# GQ distribution of only indel loci for KFRAG_00092H
+ggplot(subset(filtered.chr04, TYPE == "INDEL"), aes(x=KFRAG_00092H.GQ)) + geom_density(fill="red", alpha = 0.4) +
+  geom_density(data=subset(filtered.chr04, KFRAG_00092H_match_HI == FALSE & TYPE == "INDEL"), aes(x=KFRAG_00092H.GQ), fill="green", alpha=0.4) +
+  geom_density(data=subset(filtered.chr04, KFRAG_00092H_match_HI == TRUE & TYPE == "INDEL"), aes(x=KFRAG_00092H.GQ), fill="blue", alpha=0.4)
+```
+
+```{r}
+# GQ distribution of only SNP loci for KFRAG_00092H
+ggplot(subset(filtered.chr04, TYPE == "SNP"), aes(x=KFRAG_00092H.GQ)) + geom_density(fill="red", alpha = 0.4) +
+  geom_density(data=subset(filtered.chr04, KFRAG_00092H_match_HI == FALSE & TYPE == "SNP"), aes(x=KFRAG_00092H.GQ), fill="green", alpha=0.4) +
+  geom_density(data=subset(filtered.chr04, KFRAG_00092H_match_HI == TRUE & TYPE == "SNP"), aes(x=KFRAG_00092H.GQ), fill="blue", alpha=0.4)
+```
+
+Filter all calls using GATK basic recommendations, then make the above plots again:
+See this URL for GATK filtering recommendations: https://software.broadinstitute.org/gatk/documentation/article.php?id=3225
+Note: GATK intends for this to be a starting point, to be modified to fit your dataset's needs.
+
+For SNPs, the GATK filtering recommendations are:
+QD < 2.0
+MQ < 40.0
+FS > 60.0
+SOR > 3.0
+MQRankSum < -12.5
+ReadPosRankSum < -8.0
+
+For indels, the GATK filtering recommendations are:
+QD < 2.0
+ReadPosRankSum < -20.0
+InbreedingCoeff < -0.8
+FS > 200.0
+SOR > 10.0

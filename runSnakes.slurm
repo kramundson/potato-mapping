@@ -4,7 +4,7 @@
 #SBATCH -c 1 # Number of cores
 #SBATCH -N 1 # Ensure that all cores are on one machine
 #SBATCH --mem=4G # Memory pool for all cores in MB (see also --mem-per-cpu)
-#SBATCH --time 3-00:00:00 # 3 day runtime
+#SBATCH --time 5-00:00:00 # 5 day runtime
 #SBATCH -p gc # Partition to submit to
 #SBATCH -o 2018_0321_snake.out # File to which STDOUT will be written
 #SBATCH -e 2018_0321_snake.err # File to which STDERR will be written

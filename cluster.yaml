@@ -11,7 +11,9 @@
     "get_genome" :
     { default },
     "get_SRA_reads" :
-    { default },
+    {
+        "time" : "2-00:00:00"
+     },
     "cutadapt_pe" :
     {
         "time" : "18:01:00",

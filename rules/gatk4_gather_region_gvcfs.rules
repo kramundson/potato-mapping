@@ -1,4 +1,4 @@
-rule gatk4_gather_sample_gvcfs:
+rule gatk4_gather_region_gvcfs:
     input:
         config["genome"],
         "fofn/{sample}-{unit}.fofn",
