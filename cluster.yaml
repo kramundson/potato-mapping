@@ -12,7 +12,8 @@
     { default },
     "get_SRA_reads" :
     {
-        "time" : "2-00:00:00"
+        "time" : "3-00:00:00",
+        "c" : 4
      },
     "cutadapt_pe" :
     {
@@ -29,7 +30,7 @@
     { default },
     "align" :
     {
-        "time" : "1-00:00:00",
+        "time" : "2-00:00:00",
         "c" : 8, # note, change as needed
         "mempercpu" : "8G"
     },

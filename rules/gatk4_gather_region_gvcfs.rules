@@ -14,5 +14,5 @@ rule gatk4_gather_region_gvcfs:
     shell:
         "java {params.java_heap} -jar {params.jarpath} GatherVcfs "
         "--REFERENCE_SEQUENCE={input[0]} "
-        "$(cat {input[1]} sed 's/^/--INPUT=/g') --OUTPUT={output} {params.opt} "
-        ">2 {log}"
+        "$(cat {input[1]} | sed 's/^/--INPUT=/g') --OUTPUT={output} {params.opt} "
+        "2> {log}"

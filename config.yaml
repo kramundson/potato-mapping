@@ -3,8 +3,17 @@
 # sample).
 units: units.tsv
 
-genome: "data/genome/potato_dm_v404_all_pm_un.fasta"
-genomelink: "http://solanaceae.plantbiology.msu.edu/data/potato_dm_v404_all_pm_un.fasta.zip"
+genome: "data/genome/potato_dm_v404_all_pm_un_chloro_mito.fasta"
+
+organelle_genomes:
+    nucleus: "data/genome/potato_dm_v404_all_pm_un.fasta"
+    chloroplast: "data/genome/S_tuberosum_Group_Phureja_chloroplast_DM1-3-516-R44.fasta"
+    mitochondrion: "data/genome/S_tuberosum_Group_Phureja_mitochondrion_DM1-3-516-R44.fasta"
+
+genomelinks: 
+    nucleus: "http://solanaceae.plantbiology.msu.edu/data/potato_dm_v404_all_pm_un.fasta.zip"
+    chloroplast: "http://solanaceae.plantbiology.msu.edu/data/S_tuberosum_Group_Phureja_chloroplast_DM1-3-516-R44.fasta.zip"
+    mitochondrion: "http://solanaceae.plantbiology.msu.edu/data/S_tuberosum_Group_Phureja_mitochondrion_DM1-3-516-R44.fasta.zip"
 
 # sequencing adapter
 adapter: AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTGTTCCTGAGTGTAGATCTCGGTGGTCGCCGTATCATT
@@ -49,6 +58,10 @@ params:
     
     gatk_genotype_gvcfs:
         opt: "--heterozygosity 0.01 --indel-heterozygosity 0.001"
+    
+    freebayes:
+        threads: 12
+        opt: "--cnv-map intervals/freebayes-cnv-map.bed --hwe-priors-off --min-mapping-quality 20 --min-base-quality 20"
 
 vcfs:
     diploid:

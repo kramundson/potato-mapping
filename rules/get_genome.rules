@@ -1,9 +1,17 @@
 rule get_genome:
     params:
-        link=config["genomelink"],
-        download=config["genomelink"].split("/")[-1]
+        nucleus=[config["genomelinks"]["nucleus"],config["genomelinks"]["nucleus"].split("/")[-1]],
+        chloro=[config["genomelinks"]["chloroplast"],config["genomelinks"]["chloroplast"].split("/")[-1]],
+        mito=[config["genomelinks"]["mitochondrion"], config["genomelinks"]["mitochondrion"].split("/")[-1]]
     output:
-        config["genome"]
-    shell:
-        "wget -P data/genome {params.link} ; "
-        "unzip -d data/genome data/genome/{params.download}"
+        config["organelle_genomes"].values()
+    shell: """
+        wget -P data/genome {params.nucleus[0]} ;
+        unzip -d data/genome data/genome/{params.nucleus[1]} ;
+        
+        wget -P data/genome {params.chloro[0]} ;
+        unzip -d data/genome data/genome/{params.chloro[1]} ;
+        
+        wget -P data/genome {params.mito[0]} ;
+        unzip -d data/genome data/genome/{params.mito[1]}
+        """

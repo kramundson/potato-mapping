@@ -1,0 +1,7 @@
+rule clean_genomes:
+    input:
+        "data/genome/{prefix}.fasta"
+    output:
+        "data/genome/cleaned_{prefix}.fasta"
+    shell:
+        "python scripts/clean_multifasta.py {input} > {output}"

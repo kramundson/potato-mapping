@@ -11,17 +11,19 @@ rule gatk4_make_scaffold_intervals:
                 start = 1
                 outputstr = ""
                 
-                # divide by scaffold joins in potato assembly, which are 50,000 "N" nucleotides
+                # divide by 50,000 N scaffold joins
                 for match in re.finditer('N{50000}', str(record.seq)):
-                    outputstr += (record.id + ":" + str(start) + "-" + str(match.start()) +'\n')
-                    start = match.end() + 1 # start becomes 1-based match end for next gap
+                    outputstr += "{}:{}-{}\n".format(record.id, start, match.start())
+                    start = match.end() + 1
                 
-                # if scaffold wasn't divided by 50k N, divide using a smaller gap size
+                # if scaffold wasn't divided by 50k N, divide by 3kb gaps
+                # Prevents HaplotypeCaller from running on entire
+                # potato chr00 as one chunk
                 if start == 1: 
                     for match in re.finditer('N{3000,}', str(record.seq)):
-                        outputstr += (record.id + ":" + str(start) + "-" + str(match.start()) +'\n')
-                        start = match.end() + 1 # start becomes 1-based match end for next gap
+                        outputstr += "{}:{}-{}\n".format(record.id, start, match.start())
+                        start = match.end() + 1
 
-                # handle last nongap in fasta record
-                outputstr += (record.id + ":" + str(start) + "-" + str(len(record)) +'\n')
+                # handle last nongap interval
+                outputstr += "{}:{}-{}\n".format(record.id, start, len(record))
                 o.write(outputstr)
