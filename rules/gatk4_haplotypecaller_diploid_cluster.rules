@@ -16,5 +16,14 @@ rule gatk4_haplotypecaller_diploid_cluster:
     params:
         config["params"]["gatk_haplotypecaller_diploid"]["opt"]
     shell:
-        "gatk-launch HaplotypeCaller {params} -R {input.ref} -I {input.bam} "
-        "-O {output} -L $(echo {wildcards.region} | sed 's/_/:/' | sed 's/_/-/')"
+        """
+            ULTIMATE=$(echo {wildcards.region} | grep -o '_' | wc -l) ;
+            PENULTIMATE=$(($ULTIMATE-1)) ;
+            REGION=$(echo {wildcards.region} | \
+                sed -e "s/_/:/$PENULTIMATE" -e 's/_/-/g') ;
+            gatk-launch HaplotypeCaller {params} -R {input.ref} -I {input.bam} \
+                -O {output} -L $REGION
+        """
+
+#         "gatk-launch HaplotypeCaller {params} -R {input.ref} -I {input.bam} "
+#         "-O {output} -L $(echo {wildcards.region} | sed 's/_/:/' | sed 's/_/-/')"
