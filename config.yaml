@@ -15,6 +15,9 @@ genomelinks:
     chloroplast: "http://solanaceae.plantbiology.msu.edu/data/S_tuberosum_Group_Phureja_chloroplast_DM1-3-516-R44.fasta.zip"
     mitochondrion: "http://solanaceae.plantbiology.msu.edu/data/S_tuberosum_Group_Phureja_mitochondrion_DM1-3-516-R44.fasta.zip"
 
+intervals:
+    "data/intervals/gatk-haplocaller.intervals"
+
 # sequencing adapter
 adapter: AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTGTTCCTGAGTGTAGATCTCGGTGGTCGCCGTATCATT
 
