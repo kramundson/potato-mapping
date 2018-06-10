@@ -19,7 +19,7 @@ intervals:
     "data/intervals/gatk-haplocaller.intervals"
 
 # sequencing adapter
-adapter: AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTGTTCCTGAGTGTAGATCTCGGTGGTCGCCGTATCATT
+adapter: AGATCGGAAGAGC
 
 params:
 
