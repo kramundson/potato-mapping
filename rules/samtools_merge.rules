@@ -1,0 +1,8 @@
+rule samtools_merge:
+    input:
+        "fofn/units-{sample}.fofn",
+        lambda x: [line.rstrip('\n') for line in open("fofn/units-{}.fofn".format(x.sample))] # sample wildcard also picking up regions?
+    output:
+        "data/merged/{sample}.bam"
+    shell:
+        "samtools merge {output} {input[1]}"

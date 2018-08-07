@@ -13,7 +13,7 @@ rule gatk4_make_scaffold_intervals:
                 
                 # divide by 50,000 N scaffold joins
                 for match in re.finditer('N{50000}', str(record.seq)):
-                    outputstr += "{}:{}-{}\n".format(record.id, start, match.start())
+                    outputstr += "{}_{}_{}\n".format(record.id, start, match.start())
                     start = match.end() + 1
                 
                 # if scaffold wasn't divided by 50k N, divide by 3kb gaps
@@ -21,9 +21,9 @@ rule gatk4_make_scaffold_intervals:
                 # potato chr00 as one chunk
                 if start == 1: 
                     for match in re.finditer('N{3000,}', str(record.seq)):
-                        outputstr += "{}:{}-{}\n".format(record.id, start, match.start())
+                        outputstr += "{}_{}_{}\n".format(record.id, start, match.start())
                         start = match.end() + 1
 
                 # handle last nongap interval
-                outputstr += "{}:{}-{}\n".format(record.id, start, len(record))
+                outputstr += "{}_{}_{}\n".format(record.id, start, len(record))
                 o.write(outputstr)

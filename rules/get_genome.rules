@@ -1,10 +1,10 @@
 rule get_genome:
     params:
-        nucleus=[config["genomelinks"]["nucleus"],config["genomelinks"]["nucleus"].split("/")[-1]],
-        chloro=[config["genomelinks"]["chloroplast"],config["genomelinks"]["chloroplast"].split("/")[-1]],
-        mito=[config["genomelinks"]["mitochondrion"], config["genomelinks"]["mitochondrion"].split("/")[-1]]
+        nucleus=[config["genomelinks"][0],config["genomelinks"][0].split("/")[-1]],
+        chloro=[config["genomelinks"][1],config["genomelinks"][1].split("/")[-1]],
+        mito=[config["genomelinks"][2], config["genomelinks"][2].split("/")[-1]]
     output:
-        config["organelle_genomes"].values()
+        "data/genome/{}".format(x) for x in config["organelle_genomes"]
     shell: """
         wget -P data/genome {params.nucleus[0]} ;
         unzip -d data/genome data/genome/{params.nucleus[1]} ;

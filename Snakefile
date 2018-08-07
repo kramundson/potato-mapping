@@ -2,7 +2,7 @@
 # This Snakefile handles dataset-specific analysis, assuming that reference genome
 # file dependencies and file of output filenames have been made using init_genome.snakes
 
-import re
+import os, re
 import pandas as pd
 shell.executable("bash")
 
@@ -19,29 +19,33 @@ def get_fastq(wildcards):
 
 def get_trimmed(wildcards):
     if not is_single_end(**wildcards):
-        # paired-end sample should be aligned as such
+        # paired-end sample
         return expand("data/trimmed/{sample}-{unit}-{group}.fastq.gz",
             group=[1,2], **wildcards)
     # single end sample
     return "data/trimmed/{sample}-{unit}.fastq.gz".format(**wildcards)
 
-def get_region_gvcfs(wildcards):
-    return [line.rstrip('\n') for line in open("fofn/{sample}-{unit}.fofn".format(**wildcards))]
+def get_vcfs(wildcards):
+    intervals = [line.rstrip('\n') for line in open("data/intervals/gatk-haplocaller.intervals", 'r')]
+    vcfs = ["-I=data/calls/gatk/vcf_by_region/all-samples-{}.vcf".format(x) for x in intervals]
+    return vcfs
 
 rule all:
     input:
-        config["vcfs"]["diploid"],
-        config["vcfs"]["tetraploid"],
-        config["vcfs"]["combined"]
+        "data/calls/all-calls.vcf"
 
-include: "rules/gatk4_genotype_gvcfs.rules"
-include: "rules/gatk4_combine_sample_gvcfs.rules"
-include: "rules/gatk4_gather_region_gvcfs.rules"
+include: "rules/gatk4_merge_vcfs.rules"
+include: "rules/gatk4_genotype_region_gvcfs.rules"
+include: "rules/gatk4_merge_gvcfs_by_region.rules"
 include: "rules/gatk4_haplotypecaller_tetraploid_cluster.rules"
 include: "rules/gatk4_haplotypecaller_diploid_cluster.rules"
 include: "rules/samtools_index.rules"
+include: "rules/samtools_merge.rules"
 include: "rules/mark_duplicates.rules"
-include: "rules/align.rules"
+include: "rules/merge_aligned_pear.rules"
+include: "rules/align_pear_se.rules"
+include: "rules/align_pear_pe.rules"
+include: "rules/pear.rules"
 include: "rules/cutadapt_pe.rules"
 include: "rules/cutadapt.rules"
 include: "rules/get_SRA_reads.rules"

@@ -26,6 +26,25 @@
         "time" : "18:01:00",
         "c" : 8, # note, change to whatever current threading in Snakefile is
     },
+    "pear" :
+    {
+        "time" : "4:00:00",
+        "c" : 8
+    },
+    "align_pear_pe" :
+    {
+        "time" : "2-00:00:00",
+        "c": 8,
+        "mempercpu" : "2G"
+    },
+    "align_pear_se" :
+    {
+        "time" : "2-00:00:00",
+        "c": 8,
+        "mempercpu" : "2G"
+    },
+    "gather_aligned_pear" :
+    { default },
     "bwa_index" :
     { default },
     "align" :
@@ -64,21 +83,21 @@
         "mempercpu" : "16G",
         "time" : "3-00:00:00"
     },
-    "gatk4_gather_region_gvcfs" : # crashes when provided 2G/CPU. Adjust cluster allocation and Java heap space
+    "gatk4_merge_gvcfs_by_region" : # crashes when provided 2G/CPU. Adjust cluster allocation and Java heap space
     {
     "N" : 1,
     "c" : 1,
     "mempercpu" : "16G",
     "time" : "1-00:00:00"
     },
-    "gatk4_combine_sample_gvcfs" :
+    "gatk4_genotype_region_gvcfs" :
     {
         "N" : 1,
         "c" : 1,
         "mempercpu" : "16G",
         "time" : "1-00:00:00"
     },
-    "gatk4_genotype_gvcfs" :
+    "gatk4_merge_vcfs" :
     {
         "N" : 1,
         "c" : 1,

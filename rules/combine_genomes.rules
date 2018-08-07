@@ -1,8 +1,9 @@
 rule combine_genomes:
     input:
-        "data/genome/cleaned_potato_dm_v404_all_pm_un.fasta",
-        "data/genome/cleaned_S_tuberosum_Group_Phureja_chloroplast_DM1-3-516-R44.fasta",
-        "data/genome/cleaned_S_tuberosum_Group_Phureja_mitochondrion_DM1-3-516-R44.fasta"
+#         "data/genome/cleaned_potato_dm_v404_all_pm_un.fasta",
+#         "data/genome/cleaned_S_tuberosum_Group_Phureja_chloroplast_DM1-3-516-R44.fasta",
+#         "data/genome/cleaned_S_tuberosum_Group_Phureja_mitochondrion_DM1-3-516-R44.fasta"
+        "data/genome/cleaned_{}".format(x) for x in config["organelle_genomes"]
     output:
         config["genome"]
     shell:

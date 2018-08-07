@@ -1,7 +1,7 @@
 rule samtools_index:
     input:
-        "data/dedup/{sample}-{unit}-dedup-sorted.aln.bam"
+        "data/merged/{sample}.bam"
     output:
-        "data/dedup/{sample}-{unit}-dedup-sorted.aln.bam.bai"
+        "data/merged/{sample}.bam.bai"
     shell:
         "samtools index {input}"

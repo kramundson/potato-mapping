@@ -4,15 +4,43 @@ rule gatk4_parallel_fofn:
         intervals="data/intervals/gatk-haplocaller.intervals"
     output:
         "fofn/all-fofns.made"
-    shell:
-        """
-        for i in $(cut -f 1-2 units.tsv | tail -n +2 | tr '\t' '-')
-        do
-            while read line
-            do
-                echo 'data/calls/gatk/'$i $(echo $line | sed -E 's/:|-/_/g' | sed 's/$/.g.vcf/g') | \
-                sed 's/ /-/g' >> 'fofn/'$i'.fofn'
-            done < {input.intervals}
-        done
-        touch {output}
-        """
+    run:
+        samples = {}
+        intervals = []
+        with open(input.units, "r") as f:
+            f.readline() # header
+            for line in f:
+                l = line.split('\t')
+                if l[0] in samples.keys():
+                    samples[l[0]].append("{}-{}".format(l[0],l[1]))
+                else:
+                    samples[l[0]] = ["{}-{}".format(l[0],l[1])]
+                    
+        with open(input.intervals, "r") as g:
+            for line in g:
+                intervals.append(line.rstrip('\n'))
+                
+        for i in samples.items():
+            # write bam fofns for merging all units within sample
+            # this merge should be done after removal of PCR duplicates
+            o = open("fofn/units-{}.fofn".format(i[0]), 'w')
+            out = ["data/dedup/{}.bam".format(x) for x in i[1]]
+            o.write('\n'.join(out)+'\n')
+            o.close()
+            
+            # per-sample all region fofn for scatter-gather HaplotypeCaller
+            o2 = open("fofn/gatk-{}.fofn".format(i[0]), 'w')
+            out = ["data/calls/gatk/{}-{}.g.vcf".format(i[0], x) for x in intervals]
+            o2.write('\n'.join(out)+'\n')
+            o2.close()
+            
+        # per-region all sample fofn for scatter-gather GenotypeGVCFs
+        for interval in intervals:
+            o3 = open("fofn/all-samples-{}.fofn".format(interval), 'w')
+            out = ["data/calls/gatk/{}-{}.g.vcf".format(x, interval) for x in samples.keys()]
+            o3.write('\n'.join(out)+'\n')
+            o3.close()
+
+        o4 = open(output[0], 'w')
+        o4.write("Lorem ipsum dolor sit amet")
+        o4.close()

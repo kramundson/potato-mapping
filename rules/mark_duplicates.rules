@@ -13,9 +13,9 @@
 
 rule mark_duplicates:
     input:
-        "data/aligned_reads/{sample}-{unit}-sorted.aln.bam"
+        "data/aligned_reads/{sample}-{unit}.bam"
     output:
-        bam="data/dedup/{sample}-{unit}-dedup-sorted.aln.bam",
+        bam="data/dedup/{sample}-{unit}.bam",
         metrics="data/dedup/{sample}-{unit}-metrics.txt"
     log:
         "logs/picard/{sample}-{unit}.log"

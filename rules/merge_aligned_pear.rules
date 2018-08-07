@@ -1,0 +1,8 @@
+rule merge_aligned_pear: # currently pear-specific
+    input:
+        "data/pear/unassembled_{sample}-{unit}.bam",
+        "data/pear/assembled_{sample}-{unit}.bam"
+        # lambda x: expand("data/aligned_reads/{prefix}_{sample}-{unit}.bam", prefix=["assembled","unassembled"], x.wildcards)
+    output:
+        "data/aligned_reads/{sample}-{unit}.bam"
+    shell: "samtools merge {output} {input}"

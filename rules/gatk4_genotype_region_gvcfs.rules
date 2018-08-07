@@ -1,0 +1,24 @@
+rule gatk4_genotype_region_gvcfs:
+    input:
+        ref = config["genome"],
+        dict = re.sub("(\.fasta$|\.fa$)", ".dict", config["genome"]),
+        calls = "data/calls/gatk/gvcf_by_region/all-samples-{region}.g.vcf"
+    output:
+        "data/calls/gatk/vcf_by_region/all-samples-{region}.vcf"
+    params:
+        config["params"]["gatk_genotype_gvcfs"]["opt"]
+    log:
+        "logs/gatk4/{region}-genotype-gvcfs.log"
+    shell: """
+        ULTIMATE=$(echo {wildcards.region} | grep -o '_' | wc -l) ;
+        PENULTIMATE=$(($ULTIMATE-1)) ;
+        REGION=$(echo {wildcards.region} | \
+            sed -e "s/_/-/$ULTIMATE" -e "s/_/:/$PENULTIMATE") ;
+        java {params.java_heap} -jar {params.jarpath} \
+        -R {input.ref} \
+        --variant {input.calls} \
+        -O {output} \
+        {params} \
+        -L $REGION \
+        2> {log}
+    """

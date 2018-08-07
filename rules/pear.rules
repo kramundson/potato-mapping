@@ -1,0 +1,19 @@
+rule pear:
+    input:
+        get_trimmed
+    output:
+        "data/pear/{sample}-{unit}.assembled.fastq",
+        "data/pear/{sample}-{unit}.unassembled.forward.fastq",
+        "data/pear/{sample}-{unit}.unassembled.reverse.revcomped.fastq"
+    params:
+        options = config["params"]["pear"]["options"],
+        prefix = lambda x: "data/pear/{}-{}".format(x.sample, x.unit)
+    threads:
+        config["params"]["pear"]["threads"]
+    log:
+        "logs/pear/{sample}-{unit}.log"
+    shell: """
+        pear -f {input[0]} -r {input[1]} -o {params.prefix} -j {threads} {params.options} > {log} 2>&1 ;
+        seqtk seq -r {params.prefix}.unassembled.reverse.fastq > {params.prefix}.unassembled.reverse.revcomped.fastq ;
+        rm {params.prefix}.unassembled.reverse.fastq
+    """

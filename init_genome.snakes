@@ -17,7 +17,7 @@
 
 from Bio import SeqIO
 import re
-import pandas as pd
+import pandas as pd # (probably do not need)
 shell.executable("bash")
 
 configfile: "config.yaml"

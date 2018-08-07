@@ -1,0 +1,22 @@
+rule align_pear_pe:
+    input:
+        fwd="data/pear/{sample}-{unit}.unassembled.forward.fastq",
+        rev="data/pear/{sample}-{unit}.unassembled.reverse.revcomped.fastq",
+        ref=config["genome"],
+        index=config["genome"]+".bwt"
+    output:
+        "data/pear/unassembled_{sample}-{unit}.bam",
+    params:
+        rg="'@RG\\tID:{unit}\\tSM:{sample}'",
+        bwa_threads=3*config["params"]["align"]["threads"] // 4,
+        sort_threads=config["params"]["align"]["threads"] // 4,
+        sort_mem=config["params"]["align"]["sort_mem"]
+    threads:
+        config["params"]["align"]["threads"]
+    log:
+        "logs/bwa_mem/unassembled_{sample}-{unit}.log"
+    shell: """
+        bwa mem -R {params.rg} -t {params.bwa_threads} {input.ref} {input.fwd} \
+            {input.rev} 2> {log} | \
+        samtools sort -@{params.sort_threads} -m {params.sort_mem} -o {output} -
+    """

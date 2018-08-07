@@ -3,15 +3,14 @@
 
 rule gatk4_haplotypecaller_tetraploid_cluster:
     input:
-        bam="data/dedup/4x_{sample}-{unit}-dedup-sorted.aln.bam",
-        bai="data/dedup/4x_{sample}-{unit}-dedup-sorted.aln.bam.bai",
+        bam="data/merged/4x_{sample}.bam",
+        bai="data/merged/4x_{sample}.bam.bai",
         ref=config["genome"],
         dict=re.sub("(\.fasta$|\.fa$)", ".dict", config["genome"]),
         fai=config["genome"]+".fai",
-        fofn="fofn/4x_{sample}-{unit}.fofn",
         intervals="data/intervals/gatk-haplocaller.intervals",
     output:
-        "data/calls/gatk/4x_{sample}-{unit}-{region}.g.vcf"
+        "data/calls/gatk/4x_{sample}-{region}.g.vcf"
     threads: config["params"]["gatk_haplotypecaller_tetraploid"]["threads"]
     params:
         config["params"]["gatk_haplotypecaller_tetraploid"]["opt"]
@@ -20,9 +19,8 @@ rule gatk4_haplotypecaller_tetraploid_cluster:
             ULTIMATE=$(echo {wildcards.region} | grep -o '_' | wc -l) ;
             PENULTIMATE=$(($ULTIMATE-1)) ;
             REGION=$(echo {wildcards.region} | \
-                sed -e "s/_/:/$PENULTIMATE" -e 's/_/-/g') ;
+                sed -e "s/_/-/$ULTIMATE" -e "s/_/:/$PENULTIMATE") ;
             gatk-launch HaplotypeCaller {params} -R {input.ref} -I {input.bam} \
                 -O {output} -L $REGION
         """
-#         "gatk-launch HaplotypeCaller {params} -R {input.ref} -I {input.bam} "
-#         "-O {output} -L $(echo {wildcards.region} | sed 's/_/:/' | sed 's/_/-/')"
+

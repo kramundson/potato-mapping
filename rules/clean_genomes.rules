@@ -3,5 +3,10 @@ rule clean_genomes:
         "data/genome/{prefix}.fasta"
     output:
         "data/genome/cleaned_{prefix}.fasta"
-    shell:
-        "python scripts/clean_multifasta.py {input} > {output}"
+    run:
+        o = open(output[0], 'w')
+        with open(input[0], 'r') as handle:
+            for record in SeqIO.parse(handle, 'fasta'):
+                cleaned_record = re.sub("-","_",record.id)
+                cleaned_record = re.sub("^\?|segment", "segment_", cleaned_record)
+                o.write(">{}\n{}".format(cleaned_record, record.seq))
