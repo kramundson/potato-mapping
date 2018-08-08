@@ -6,7 +6,9 @@ rule gatk4_genotype_region_gvcfs:
     output:
         "data/calls/gatk/vcf_by_region/all-samples-{region}.vcf"
     params:
-        config["params"]["gatk_genotype_gvcfs"]["opt"]
+        java_heap=config["params"]["gatk_genotype_gvcfs"]["java_heap"],
+        jarpath=config["params"]["gatk_genotype_gvcfs"]["jarpath"],
+        opt=config["params"]["gatk_genotype_gvcfs"]["opt"]
     log:
         "logs/gatk4/{region}-genotype-gvcfs.log"
     shell: """
@@ -18,7 +20,7 @@ rule gatk4_genotype_region_gvcfs:
         -R {input.ref} \
         --variant {input.calls} \
         -O {output} \
-        {params} \
+        {params.opt} \
         -L $REGION \
         2> {log}
     """

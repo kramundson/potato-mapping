@@ -27,7 +27,7 @@ def get_trimmed(wildcards):
 
 def get_vcfs(wildcards):
     intervals = [line.rstrip('\n') for line in open("data/intervals/gatk-haplocaller.intervals", 'r')]
-    vcfs = ["-I=data/calls/gatk/vcf_by_region/all-samples-{}.vcf".format(x) for x in intervals]
+    vcfs = ["data/calls/gatk/vcf_by_region/all-samples-{}.vcf".format(x) for x in intervals]
     return vcfs
 
 rule all:
