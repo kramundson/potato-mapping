@@ -8,9 +8,9 @@ rule clean_genomes:
         with open(input[0], 'r') as handle:
             for record in SeqIO.parse(handle, 'fasta'):
                 cleaned_record = re.sub("-","_",record.id)
-                if cleaned_record[0:2] == ">?":
+                if cleaned_record[0:1] == "?":
                     # reformat, keeping header that is still unique but is more shell friendly
-                    cleaned_record = re.sub(">?", ">qmark_segment", cleaned_record)
+                    cleaned_record = re.sub("\?", "qmark_segment_", cleaned_record)
                 else:
-                    cleaned_record = re.sub("segment", "segment_", cleaned_record)
+                    pass
                 o.write(">{}\n{}\n".format(cleaned_record, record.seq))
