@@ -17,6 +17,7 @@ rule gatk4_genotype_region_gvcfs:
         REGION=$(echo {wildcards.region} | \
             sed -e "s/_/-/$ULTIMATE" -e "s/_/:/$PENULTIMATE") ;
         java {params.java_heap} -jar {params.jarpath} \
+        GenotypeGVCFs \
         -R {input.ref} \
         --variant {input.calls} \
         -O {output} \

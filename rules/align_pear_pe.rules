@@ -5,7 +5,7 @@ rule align_pear_pe:
         ref=config["genome"],
         index=config["genome"]+".bwt"
     output:
-        "data/pear/unassembled_{sample}-{unit}.bam",
+        "data/pear/unassembled_{sample}-{unit}.bam"
     params:
         rg="'@RG\\tID:{unit}\\tSM:{sample}'",
         bwa_threads=3*config["params"]["align"]["threads"] // 4,
